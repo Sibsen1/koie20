@@ -6,16 +6,20 @@ import java.util.List;
 import pages.GUI;
 	
 public class Core {
-
+	
 	public String userEmail; // Vi trenger ingen brukerklasse før det viser 
 	public boolean isAdmin;	 // -> seg at disse to ikke er alt vi trenger.
+	
+	String DBhostAddress = "r.saggau.no";
+	String DBUserName = "user";
+	String DBPassword = "koie20pw";
 	
 	private GUI GUIClass;
 	private DBConnector DBClass;
 	
 	public Core() {
 		GUIClass = new GUI(this);
-		DBClass = new DBConnector(this);
+		DBClass = new DBConnector(this, DBhostAddress,DBUserName,DBPassword);
 	}
 
 	public boolean login(String email) {

@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
+//Test
 public class IniPage extends JFrame{
 	public IniPage() {
 		
@@ -49,9 +50,14 @@ public class IniPage extends JFrame{
 		imgPanel.setBounds(72, 11, 208, 101);
 		contentPane.add(imgPanel);
 		
-		BufferedImage myPicture;
-		//myPicture = ImageIO.read(new File("../resources/koie_login.jpg"));
-		JLabel picLabel = new JLabel(new ImageIcon("C:\\Users\\admin\\git\\koie20\\koie.ui\\resources\\koie_login.jpg"));
+		BufferedImage myPicture = null;
+		try {
+			myPicture = ImageIO.read(new File("resources/koie_login.jpg"));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		JLabel picLabel = new JLabel(new ImageIcon(myPicture));
 		imgPanel.add(picLabel);
 				
 	}	
