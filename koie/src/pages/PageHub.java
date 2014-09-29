@@ -5,10 +5,10 @@ import org.openstreetmap.gui.jmapviewer.*;
 
 import com.alee.laf.WebLookAndFeel;
 
+import core.Core;
+
 import java.awt.*;
 import java.awt.event.*;
-
-import koie.core.Core;
 
 public class PageHub extends JFrame{
 	

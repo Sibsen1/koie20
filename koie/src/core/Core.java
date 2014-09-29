@@ -1,4 +1,4 @@
-package koie.core;
+package core;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +23,12 @@ public class Core {
 	}
 
 	public boolean login(String email) {
-		// TODO
+		String[] parts = email.split("@");
+		if (parts.length == 2 && parts[1].indexOf(".")!=-1){ //Check for only one @ and atleast one .
+			isAdmin = true;
+			userEmail = email;
+			return true;
+		}
 		return false;
 	}
 

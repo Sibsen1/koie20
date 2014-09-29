@@ -1,7 +1,6 @@
 package pages;
 
-import koie.core.Core;  // For å bruke denne har jeg måtte lagt begge prosjektene i hver sin Build Path, noe som fører til en såkalt Circular Dependency Error.
-						// * Dette betyr kanskje at vi må spleise prosjektene for at det skal virke -Sindre
+import core.Core;
 
 public class GUI {
 

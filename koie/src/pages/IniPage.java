@@ -13,6 +13,8 @@ import java.awt.event.ActionEvent;
 
 //Test
 public class IniPage extends JFrame{
+	JButton btnOk = new JButton("OK");
+	JTextPane txtEpos = new JTextPane();
 	public IniPage() {
 		
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -21,7 +23,19 @@ public class IniPage extends JFrame{
 		getContentPane().add(contentPane, BorderLayout.CENTER);
 		contentPane.setLayout(null);
 		
-		JButton btnOk = new JButton("OK");
+		
+		JTextField txtEmail = new JTextField();
+		txtEmail.setBounds(10, 143, 364, 23);
+		contentPane.add(txtEmail);
+		
+		
+		txtEpos.setEditable(false);
+		txtEpos.setBackground(contentPane.getBackground());
+		txtEpos.setText("Epost adresse:");
+		txtEpos.setBounds(10, 123, 176, 20);
+		contentPane.add(txtEpos);
+		
+		
 		btnOk.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				/*if (core.validateEmail(txtEpos.text)){
@@ -34,17 +48,6 @@ public class IniPage extends JFrame{
 		});
 		btnOk.setBounds(150, 177, 89, 23);
 		contentPane.add(btnOk);
-		
-		JTextField txtEmail = new JTextField();
-		txtEmail.setBounds(10, 143, 364, 23);
-		contentPane.add(txtEmail);
-		
-		JTextPane txtEpos = new JTextPane();
-		txtEpos.setEditable(false);
-		txtEpos.setBackground(contentPane.getBackground());
-		txtEpos.setText("Epost adresse:");
-		txtEpos.setBounds(10, 123, 176, 20);
-		contentPane.add(txtEpos);
 		
 		JPanel imgPanel = new JPanel();
 		imgPanel.setBounds(72, 11, 208, 101);
@@ -61,6 +64,7 @@ public class IniPage extends JFrame{
 		imgPanel.add(picLabel);
 				
 	}	
+
 	public static void main(String[] args) {  
 		try {
 			UIManager.setLookAndFeel ( WebLookAndFeel.class.getCanonicalName () );
@@ -77,6 +81,7 @@ public class IniPage extends JFrame{
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
+		
 		IniPage initer = new IniPage();
 		initer.show();
 		initer.setSize(400, 250);
