@@ -1,4 +1,4 @@
-package pages;
+package gui;
 
 import core.Core;
 

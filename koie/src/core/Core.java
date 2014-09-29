@@ -1,9 +1,9 @@
 package core;
 
+import gui.GUI;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import pages.GUI;
 	
 public class Core {
 	

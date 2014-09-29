@@ -1,4 +1,4 @@
-package pages;
+package gui;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 

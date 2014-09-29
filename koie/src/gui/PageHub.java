@@ -1,4 +1,4 @@
-package pages;
+package gui;
 import javax.swing.*;
 
 import org.openstreetmap.gui.jmapviewer.*;
