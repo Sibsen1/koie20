@@ -5,34 +5,40 @@ import gui.GUI;
 import java.util.ArrayList;
 import java.util.List;
 	
+// Merknad: Alle individuelle kommentarer må være signert,
+// * med mindre de henger sammen, som dette. -Sindre
+
 public class Core {
 	
 	public String userEmail; // Vi trenger ingen brukerklasse før det viser 
 	public boolean isAdmin;	 // -> seg at disse to ikke er alt vi trenger.
 	
-	String DBhostAddress = "r.saggau.no";
-	String DBUserName = "user";
-	String DBPassword = "koie20pw";
+	final static String DBhostAddress = "jdbc:mysql://r.saggau.no:3306/koie20";
+	final static String DBUserName = "user";
+	final static String DBPassword = "koie20pw";
 	
 	private GUI GUIClass;
 	private DBConnector DBClass;
 	
 	public Core() {
 		GUIClass = new GUI(this);
-		DBClass = new DBConnector(this, DBhostAddress,DBUserName,DBPassword);
+		DBClass = new DBConnector(this, DBhostAddress, DBUserName, DBPassword);
 	}
 
 	public boolean login(String email) {
 		String[] parts = email.split("@");
-		if (parts.length == 2 && parts[1].indexOf(".")!=-1){ //Check for only one @ and atleast one .
+		if (parts.length == 2 && parts[1].indexOf(".")!=-1){ // Check for only one @ and atleast one. -Ole
+			
 			isAdmin = true;
 			userEmail = email;
+			// TODO
+			
 			return true;
 		}
 		return false;
 	}
 
-	public ArrayList<String> getKoieRow(int koieID) {
+	public ArrayList<String> getKoieProperties(int koieID) {
 		// TODO
 		return new ArrayList<String>();
 	}
