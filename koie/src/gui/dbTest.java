@@ -33,9 +33,9 @@ public class dbTest {
 	        String query = "select * from user ;";
 	        ResultSet rs = stmt.executeQuery(query);
 	        while (rs.next()) {
-	            String userID = rs.getObject(1).toString();
-	            String userMail = rs.getObject(2).toString();
-	            System.out.println("ID:" + userID + " med mail:" + userMail);
+	            String userMail = rs.getObject(1).toString();
+	            String isAdmin = rs.getObject(2).toString();
+	            System.out.println("Mail:" + userMail + " og er admin:" + isAdmin);
 
 	        }
 		}
