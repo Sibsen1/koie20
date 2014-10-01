@@ -2,6 +2,7 @@ package core;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -134,13 +135,18 @@ public class DBConnector {
 		executeSQL(SQLString);
 	}
 	
-	public void deleteRow(String table, int rowNumber) {
-		String SQLString;
-		
-		// TODO
-		SQLString = "";
-		
-		executeSQL(SQLString);
+	public void deleteRow(String table, String ID) {
+		String sqlStatement = "DELETE FROM 'Table' = ? WHERE 'ID' = ?";
+		PreparedStatement deleteRow;
+		try {
+			deleteRow = connection.prepareStatement(sqlStatement);
+			deleteRow.setString(1, table);
+			deleteRow.setString(2, ID);
+			deleteRow.executeUpdate();
+		} catch (SQLException e) {
+			System.out.println("SQL Exception: Could not delete row from table with ID");
+			e.printStackTrace();
+		}
 	}
 
 	public void editRow(String DBName, int rowNumber, Object... writableFields) {
