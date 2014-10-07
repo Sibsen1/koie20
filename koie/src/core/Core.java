@@ -2,6 +2,7 @@ package core;
 
 import gui.GUI;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 	
@@ -20,7 +21,7 @@ public class Core {
 	private GUI GUIClass;
 	private DBConnector DBClass;
 	
-	public Core() {
+	public Core() throws SQLException {
 		GUIClass = new GUI(this);
 		DBClass = new DBConnector(this, DBhostAddress, DBUserName, DBPassword);
 	}
