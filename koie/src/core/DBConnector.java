@@ -1,6 +1,7 @@
 package core;
 
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -8,7 +9,9 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class DBConnector {
 	private Core CoreClass;
@@ -20,9 +23,10 @@ public class DBConnector {
 	public Connection connection;
 	
 	List<String> tables;
-	List<List<String>> tableColumns;
+	Map<String, List<String>> tableColumns;
+	Map<String, String> primaryKeys;
 	
-	public DBConnector(Core CoreClass, String DBhostAddress, String DBUserName, String DBPassword) {
+	public DBConnector(Core CoreClass, String DBhostAddress, String DBUserName, String DBPassword) throws SQLException {
 		this.CoreClass = CoreClass;
 		
 		this.DBhostAddress = DBhostAddress;
@@ -37,36 +41,55 @@ public class DBConnector {
 			res = executeSQL(
 					"SELECT * FROM INFORMATION_SCHEMA.TABLES LIMIT 40, 999");
 			
-			tables = new ArrayList<String>();
+			
+			tables = new ArrayList<String>(); // Liste over alle tabell-navn
+			primaryKeys = new HashMap<String, String>(); // Liste over hver tabell sin primary key
+			
+			DatabaseMetaData dataMeta = connection.getMetaData();
+			
+			String tableName;
 			while (res.next()) {
-				tables.add(res.getString(3));
+				tableName = res.getString(3);
+				tables.add(tableName);
+				
+				ResultSet primaryKeyResSet = dataMeta.getPrimaryKeys(null, null, tableName);
+				primaryKeyResSet.next();
+				
+				primaryKeys.put(
+						tableName, 
+						primaryKeyResSet.getString(4));
 			}
 			res.close();
 			
-			tableColumns = new ArrayList<List<String>>();
 			
-			int tablesSize = tables.size();	
-			for (int tableI = 0; tableI < tablesSize; tableI++) {
+			tableColumns = new HashMap<String, List<String>>(); // Liste over kolonnenavnene til hver tabell:
 				
-				res = getQuery(tables.get(tableI));
-				tableColumns.add(new ArrayList<String>());
+			for (String tabName : tables) {
 				
-				int columnsSize = res.getMetaData().getColumnCount();
+				res = getQuery(tabName);
+				ResultSetMetaData resMeta = res.getMetaData();
+				
+				tableColumns.put(tabName, new ArrayList<String>());
+				
+				int columnsSize = resMeta.getColumnCount();
 				for (int i = 1; i <= columnsSize; i++) {
 					
-					tableColumns.get(tableI).add(
-							res.getMetaData().getColumnLabel(i));
+					if (resMeta.isWritable(i))
+						tableColumns.get(tabName).add( resMeta.getColumnLabel(i));
 				}
-			}			
+			}
+				
 		} catch (SQLException ex) {
-			// TODO Auto-generated catch block
+			// TODO
 			
 			// Kanskje Core.ConnectionFailed(); som ikke krasjer programmet? -Sindre
 			
-			// * Kopipasta fra MySQL:
 			System.out.println("SQLException: " + ex.getMessage());
 			System.out.println("SQLState: " + ex.getSQLState());
 			System.out.println("VendorError: " + ex.getErrorCode());
+			
+			throw ex;
+			
 		} finally {
 			
 			try {
@@ -97,9 +120,10 @@ public class DBConnector {
 		this.connection = 
 				DriverManager.getConnection(
 						DBhostAddress, DBUserName, DBPassword);
+	
 	}
 		
-	public ResultSet getQuery(String DBName, String... columns) {
+	public ResultSet getQuery(String DBName, String... columns) throws SQLException {
 		
 		if (columns.length < 1)
 			return executeSQL("SELECT * FROM "+ DBName);
@@ -109,15 +133,16 @@ public class DBConnector {
 		for (; columnI < columns.length - 1; columnI++) {
 			
 			sBuild.append(columns[columnI]);
-			sBuild.append(",");
+			sBuild.append(", ");
 		}
 		sBuild.append(columns[columnI]);
 		
 		return executeSQL(String.format("SELECT %s FROM %s", sBuild, DBName));
+		
 	}	
 	
 	public ResultSet getQueryJoined(String DBName, String DB2Name, 
-			String matchingColumn1, String matchingColumn2, String... columns) {
+			String matchingColumn1, String matchingColumn2, String... columns) throws SQLException {
 		// TODO
 		String SQLString = "";
 		
@@ -125,29 +150,66 @@ public class DBConnector {
 		// * columns-argumentene som skal vises må skrives på form 'table.column'  -Sindre
 		
 		return executeSQL(SQLString);
-	}
-	public void insertRow(String table, int ID, Object... fields) {
-		
-		//Må muligens lage if setninger basert på hvilken table vi skal oppdatere, siden column count kan være forskjellig
-		//Må også muligens legge til flere %s for antall columns i tabell og finne ut om den skipper uforanderlige columns 
-		
-		executeSQL(String.format("UPDATE %s SET %s, %s, %s, %s WHERE id = %s", table, fields, ID));
 		
 	}
 	
-	public void deleteRow(String table, int ID) {
+	
+	public void insertRow(String DBName, Object... fields) throws SQLException {
+		
+		if (fields.length < 1) {
+			executeSQL("INSERT INTO "+ DBName + "DEFAULT VALUES");
+			return;
+		}
+
+		StringBuilder sBuild = new StringBuilder();
+		int columnI = 0; // columnI-deklarasjonen er utenfor for-løkken slik at den kan brukes rett etter -Sindre
+		for (; columnI < fields.length - 1; columnI++) {
+			
+			sBuild.append(fields[columnI]);
+			sBuild.append(", ");
+		}
+		sBuild.append(fields[columnI]);
+		
+		executeSQL(String.format("INSERT INTO %s VALUES (%s)", DBName, sBuild));
+		
+	}
+	
+	
+	public void deleteRow(String table, int ID) throws SQLException {
 		
 		executeSQL(String.format("DELETE FROM %s WHERE %s", table, ID));
 		
 	}
 
-	public void editRow(String table, String koie, Object... writableFields) {
+	
+	public void editRow(String DBName, Object primaryKey, Object... writableFields) throws SQLException {
 		
-		executeSQL(String.format("UPDATE %s SET %s, %s, %s, %s WHERE koie = %s", table, writableFields, koie));
+		if (writableFields.length < 1) {
+			throw new SQLException("writableFields must have more than 0 elements");
+		}
+
+		List<String> columns = tableColumns.get(DBName);
+		
+		StringBuilder sBuild = new StringBuilder();
+		
+		int columnI = 0;
+		for (; columnI < writableFields.length - 1; columnI++) {
+			
+			sBuild.append(columns.get(columnI));
+			sBuild.append("=");
+			sBuild.append(writableFields[columnI]);
+			sBuild.append(", ");
+		}
+		sBuild.append(columns.get(columnI));
+		sBuild.append("=");
+		sBuild.append(writableFields[columnI]);
+		
+		executeSQL(String.format("UPDATE %s SET %s WHERE %s = %s", 
+				DBName, sBuild, primaryKeys.get(DBName), primaryKey));
 		
 	}
 	
-	private ResultSet executeSQL(String SQLString) { 
+	private ResultSet executeSQL(String SQLString) throws SQLException { 
 		Statement statement = null;
 		ResultSet result = null;
 		
@@ -161,31 +223,33 @@ public class DBConnector {
 			}
 			
 		} catch (SQLException ex) {
-			// TODO: Kanskje Core.DBConnectionFailure() som i konstruktøren igjen -Sindre
+			// TODO: Kanskje Core.DBConnectionFailure() som i konstruktøren? -Sindre
 			
-		    System.out.println("SQLException: " + ex.getMessage());
-		    System.out.println("SQLState: " + ex.getSQLState());
-		    System.out.println("VendorError: " + ex.getErrorCode());
-		    
+			throw (new SQLException(
+					" SQLException: " + ex.getMessage() + 
+					"\n SQLState: " + ex.getSQLState() + 
+					"\n VendorError: " + ex.getErrorCode()));	    
 		}
 		
 		return result;
 	}
-	
-	public void testMethod(String... t) {
-		
-	}
+
 	
 	public static void main(String[] args) throws SQLException {
 		DBConnector dbc = new DBConnector(new Core(),
 				Core.DBhostAddress, Core.DBUserName, Core.DBPassword);
+		
+		for (String key : dbc.primaryKeys.keySet()) {
+			System.out.println(dbc.primaryKeys.get(key));
+		}
+		System.out.println();
 
 		ResultSet res = dbc.getQuery("koie");
 		ResultSetMetaData resMeta = res.getMetaData();
 		
 		int columnCount = resMeta.getColumnCount();
 		for (int columnI = 1; columnI <= columnCount; columnI++) {
-			System.out.print(resMeta.getColumnType(columnI)+"  ");
+			//System.out.print(((com.mysql.jdbc.ResultSetMetaData) resMeta).getField(0).isPrimaryKey()+"  ");
 			System.out.println(resMeta.getColumnTypeName(columnI));
 		}
 	}

@@ -25,13 +25,13 @@ public class DBConnectorTest {
 		assertNotEquals(dbc.tables.size(), 0);
 		assertNotEquals(dbc.tableColumns.size(), 0);
 		
-		for (List<String> columns : dbc.tableColumns) {
-			assertNotEquals(columns.size(), 0);			
+		for (String columnsKey : dbc.tableColumns.keySet()) {
+			assertNotEquals(dbc.tableColumns.get(columnsKey).size(), 0);			
 		}
 	}
 
 	@Test
-	public void testGetQuery() {
+	public void testGetQuery() throws SQLException {
 		ResultSet res;
 		
 		for (String table : dbc.tables) {
