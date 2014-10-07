@@ -126,37 +126,26 @@ public class DBConnector {
 		
 		return executeSQL(SQLString);
 	}
-	public void insertRow(String DBName, Object... fields) {
-		String SQLString;
-
-		// TODO
-		SQLString = "";
+	public void insertRow(String table, int ID, Object... fields) {
 		
-		executeSQL(SQLString);
+		//Må muligens lage if setninger basert på hvilken table vi skal oppdatere, siden column count kan være forskjellig
+		//Må også muligens legge til flere %s for antall columns i tabell og finne ut om den skipper uforanderlige columns 
+		
+		executeSQL(String.format("UPDATE %s SET %s, %s, %s, %s WHERE id = %s", table, fields, ID));
+		
 	}
 	
-	public void deleteRow(String table, String ID) {
-		String sqlStatement = "DELETE FROM 'Table' = ? WHERE 'ID' = ?";
-		PreparedStatement deleteRow;
-		try {
-			deleteRow = connection.prepareStatement(sqlStatement);
-			deleteRow.setString(1, table);
-			deleteRow.setString(2, ID);
-			deleteRow.executeUpdate();
-		} catch (SQLException e) {
-			System.out.println("SQL Exception: Could not delete row from table with ID");
-			e.printStackTrace();
-		}
+	public void deleteRow(String table, int ID) {
+		
+		executeSQL(String.format("DELETE FROM %s WHERE %s", table, ID));
+		
 	}
 
-	public void editRow(String DBName, int rowNumber, Object... writableFields) {
-		String SQLString;
+	public void editRow(String table, String koie, Object... writableFields) {
 		
-		// TODO
-		SQLString = "";
+		executeSQL(String.format("UPDATE %s SET %s, %s, %s, %s WHERE koie = %s", table, writableFields, koie));
 		
-		executeSQL(SQLString);
-	}	
+	}
 	
 	private ResultSet executeSQL(String SQLString) { 
 		Statement statement = null;
@@ -182,10 +171,15 @@ public class DBConnector {
 		
 		return result;
 	}
+	
+	public void testMethod(String... t) {
+		
+	}
+	
 	public static void main(String[] args) throws SQLException {
 		DBConnector dbc = new DBConnector(new Core(),
 				Core.DBhostAddress, Core.DBUserName, Core.DBPassword);
-	
+
 		ResultSet res = dbc.getQuery("koie");
 		ResultSetMetaData resMeta = res.getMetaData();
 		
