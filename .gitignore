@@ -3,7 +3,10 @@
 ### Eclipse ###
 *.pydevproject
 .metadata
+.settings
 .gradle
+.classpath
+.project
 tmp/
 *.tmp
 *.bak
