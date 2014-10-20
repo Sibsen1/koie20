@@ -29,13 +29,6 @@ public class IniPage extends JFrame{
 		contentPane.add(txtEmail);
 		
 		
-		txtEpos.setEditable(false);
-		txtEpos.setBackground(contentPane.getBackground());
-		txtEpos.setText("Epost adresse:");
-		txtEpos.setBounds(10, 123, 176, 20);
-		contentPane.add(txtEpos);
-		
-		
 		btnOk.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				/*if (core.validateEmail(txtEpos.text)){
@@ -61,6 +54,13 @@ public class IniPage extends JFrame{
 			e.printStackTrace();
 		}
 		JLabel picLabel = new JLabel(new ImageIcon(myPicture));
+		imgPanel.add(txtEpos);
+		
+		
+		txtEpos.setEditable(false);
+		txtEpos.setBackground(contentPane.getBackground());
+		txtEpos.setText("Epost adresse:");
+		
 		imgPanel.add(picLabel);
 				
 	}	

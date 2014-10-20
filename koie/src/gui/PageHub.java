@@ -13,41 +13,18 @@ import java.awt.event.*;
 public class PageHub extends JFrame{
 	
 		JTabbedPane contentPanel = new JTabbedPane();
-		JPanel kartPane = new JPanel();
-		JPanel reservePane = new JPanel();
+		ReservePane reservePane = new ReservePane();
+		MapPane mapPane = new MapPane();
+		
 						
 		public PageHub() {
 			getContentPane().add(contentPanel);
 			
 			contentPanel.add("Reserver",reservePane);
-			contentPanel.add("Kart",kartPane);
+			contentPanel.add("Kart",mapPane);
 			
 			this.setSize(600, 500);
-			
-			mapPane();
+			this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		}
 		
-		public void mapPane(){
-			JMapViewer mapPanel = new JMapViewer(); 
-			mapPanel.setBounds(10, 11, 400, 400);
-			
-			double lat = 63.13;
-			double lon = 10.43;
-			mapPanel.setDisplayPositionByLatLon(lat, lon, 8);
-			
-			kartPane.setLayout(null);
-			kartPane.add(mapPanel);
-			
-			// START1
-			// Denne koden bør nok flyttes til en KartPane/MapPage klasse, og bli lagt under en "SwitchTo"-metode som skaper kartnodene når brukeren skifter til kartfanen -Sindre 
-			
-			//double[][] koie_cords = CoreClass.getKoieCords();
-			double[][] koie_cords = {{lat,lon}};
-			
-			for (double[] k: koie_cords){
-				mapPanel.addMapMarker(new MapMarkerDot(k[0],k[1]));
-			}
-			mapPanel.repaint();
-			//END1
-		}
 }
