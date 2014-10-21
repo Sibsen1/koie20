@@ -44,8 +44,7 @@ public class Core {
 		return new ArrayList<String>();
 	}
 
-	// Returnerer 2D-ArrayList av én eller flere kolonner:
-	// * Husk når vi lager ArrayList: "List l = ArrayList". Derfor er det Array<List> som må gjøres om til ArrayList<ArrayList> når den skapes -Sindre
+	// Returnerer 2D-ArrayList av én eller flere kolonner: -Sindre
 	public ArrayList<List<String>> getDataBaseColumns(String DBName, String... attributeName) {
 		// TODO
 		return new ArrayList<List<String>>();
@@ -57,5 +56,5 @@ public class Core {
 		return "";
 	}
 	
-	// Husk! All DBConnector-påkallelser må gå igjennom en metode her først. -Sindre 
+	// Husk! All bruk av DBConnector må gå igjennom en metode her først. -Sindre 
 }

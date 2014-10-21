@@ -23,10 +23,10 @@ public class DBConnectorTest {
 	@Test
 	public void testDBConnector() {
 		assertNotEquals(dbc.tables.size(), 0);
-		assertNotEquals(dbc.tableColumns.size(), 0);
+		assertNotEquals(dbc.tableColumnNames.size(), 0);
 		
-		for (String columnsKey : dbc.tableColumns.keySet()) {
-			assertNotEquals(dbc.tableColumns.get(columnsKey).size(), 0);			
+		for (String columnsKey : dbc.tableColumnNames.keySet()) {
+			assertNotEquals(dbc.tableColumnNames.get(columnsKey).size(), 0);			
 		}
 	}
 
