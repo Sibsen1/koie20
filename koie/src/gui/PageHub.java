@@ -13,7 +13,7 @@ import java.awt.event.*;
 public class PageHub extends JFrame{
 	
 		JTabbedPane contentPanel = new JTabbedPane();
-		ReservePane reservePane = new ReservePane();
+		/*ReservePane reservePane = new ReservePane();
 		MapPane mapPane = new MapPane();
 		
 						
@@ -25,6 +25,6 @@ public class PageHub extends JFrame{
 			
 			this.setSize(600, 500);
 			this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		}
+		}*/
 		
 }
