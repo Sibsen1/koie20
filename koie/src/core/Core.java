@@ -26,26 +26,18 @@ public class Core {
 		DBClass = new DBConnector(this, DBhostAddress, DBUserName, DBPassword);
 	}
 
-	public boolean login(String email) {
-		String[] parts = email.split("@");
-		if (parts.length == 2 && parts[1].indexOf(".")!=-1){ // Check for only one @ and atleast one. -Ole
-			
-			isAdmin = true;
-			userEmail = email;
-			// TODO
-			
-			return true;
-		}
-		return false;
+	public void login(String email) {
+		this.userEmail = email;
+		//this.isAdmin = DBClass.checkAdmin(email);
 	}
 
-	public ArrayList<String> getKoieProperties(int koieID) {
+	public ArrayList<String> getRow(String table, int rowNr) {
 		// TODO
 		return new ArrayList<String>();
 	}
 
 	// Returnerer 2D-ArrayList av én eller flere kolonner: -Sindre
-	public ArrayList<List<String>> getDataBaseColumns(String DBName, String... attributeName) {
+	public ArrayList<List<String>> getDataBaseColumns(String table, String... attributeName) {
 		// TODO
 		return new ArrayList<List<String>>();
 	}
