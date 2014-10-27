@@ -11,6 +11,9 @@ import core.Core;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import java.awt.ScrollPane;
+import javax.swing.border.LineBorder;
+import java.awt.Color;
 
 public class AdminPane extends JPanel {
 	JPanel cards;
@@ -37,6 +40,7 @@ public class AdminPane extends JPanel {
 		names.add("sdsdas");
 		//names.addAll(g.CoreClass.getDataBaseColumns("koie", "koienavn").get(0));
 		JList lstKoier = new JList(names.toArray());
+		lstKoier.setBorder(new LineBorder(new Color(0, 0, 0)));
 		lstKoier.setBounds(45, 44, 146, 330);
 		start.add(lstKoier);
 		
@@ -74,16 +78,17 @@ public class AdminPane extends JPanel {
 		JTextPane labKoier = new JTextPane();
 		labKoier.setText("Koier:");
 		labKoier.setBounds(45, 13, 112, 20);
+		labKoier.setBackground(this.getBackground());
 		start.add(labKoier);
 		
 		
 		
 		
-		cards.add(start,"Start");
 		
 		JTextPane labNewAdmin = new JTextPane();
 		labNewAdmin.setText("Legg til ny admin:");
 		labNewAdmin.setBounds(348, 13, 112, 20);
+		labNewAdmin.setBackground(this.getBackground());
 		start.add(labNewAdmin);
 		
 		txtAdmin = new JTextField();
@@ -106,16 +111,39 @@ public class AdminPane extends JPanel {
 		
 		ArrayList<List<String>> rapport = new ArrayList<List<String>>();
 		String column_names[]= {"Bruker:","Koie:","Rapport:"};
-		//rapport = g.CoreClass.getDataBaseColumns("rapport", "user_mail","koie_idkoie","rapporttext");
 		DefaultTableModel table_model = new DefaultTableModel(column_names,3);//rapport.get(0).size()); //Lager headers og setter rowcount til antall rapporter
+		/*
+		rapport = g.CoreClass.getDataBaseColumns("rapport", "user_mail","koie_idkoie","rapporttext");
+		ArrayList<Object[]> rows = new ArrayList<Object[]>();
+		for (int i = 0; i < rapport.size();i++){
+			rows.set(i,new Object[rapport.size()]);
+			for (int k = 0; k < rapport.get(0).size();k++){
+				rows.get(k)[i] = rapport.get(i).get(k);
+			}
+		}          //using getdataBaseColums
+		
+		
+		for (int i = 1; i < g.CoreClass.getDataBaseColumns("koie", "idkoie").get(0).size();i++){
+			rapport.add(g.CoreClass.getRow("rapport",i));
+		}
+		
+		for (List<String> ls : rapport){
+			table_model.addRow(ls.toArray());
+		}*/          //using getRow
 		tblRapport = new JTable(table_model);
-		tblRapport.setBounds(289, 200, 281, 175);
-		start.add(new JScrollPane(tblRapport));
+		
+		JScrollPane jspB = new JScrollPane(tblRapport);
+		jspB.setBounds(289, 200, 281, 175);
+		start.add(jspB);
 		
 		JTextPane labRapport = new JTextPane();
 		labRapport.setText("Liste over rapporter:");
-		labRapport.setBounds(289, 169, 119, 20);
+		labRapport.setBounds(289, 169, 134, 20);
+		labRapport.setBackground(this.getBackground());
 		start.add(labRapport);
+		
+		cards.add(start,"Start");
+		
 		
 		//------------------- Start end
 		
