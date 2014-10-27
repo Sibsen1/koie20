@@ -3,13 +3,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
-import core.Core;
+
 import javax.swing.*;
 
 import org.openstreetmap.gui.jmapviewer.*;
 
 public class MapPane extends JPanel {
-	public MapPane(GUI g) {
+	public MapPane() {
 		this.setSize(600, 500);
 		JMapViewer mapPanel = new JMapViewer(); 
 		mapPanel.setBounds(10, 11, 400, 359);
@@ -41,7 +41,7 @@ public class MapPane extends JPanel {
 		
 		
 		ArrayList<String> names = new ArrayList();
-		//names.addAll(g.CoreClass.getDataBaseColumns("koie", "koienavn").get(0)); //Skal hente alle navn på koiene
+		//names.add( Core.getKoieNames()); Skal hente alle navn på koiene
 		names.add("fdhghf");
 		names.add("fdfhgh");
 		names.add("fdsdadf");
@@ -60,11 +60,11 @@ public class MapPane extends JPanel {
 		}
 		
 	
-		//double[][] koie_cords = (double[][])g.CoreClass.getDataBaseColumns("koie","latitude","longitude");
+		//double[][] koie_cords = Core.getKoieCords();
 		double[][] koie_cords = {{lat,lon}};
 	
 		for (double[] k: koie_cords){
-			mapPanel.addMapMarker(new MapMarkerDot(null, "Hytte", k[0], k[1]));
+			mapPanel.addMapMarker(new MapMarkerDot(k[0],k[1]));
 		}
 		mapPanel.repaint();
 	}

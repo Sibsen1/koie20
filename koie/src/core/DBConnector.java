@@ -332,9 +332,10 @@ public class DBConnector {
 		}
 		System.out.println();
 		
+		
 		printResultSet(dbc.getQuery("user"));
 		
-		
+		dbc.deleteRow("reservations", 10);
 		
 		printResultSet(dbc.getQuery("reservations"));
 	}

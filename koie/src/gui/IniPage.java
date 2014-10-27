@@ -31,14 +31,12 @@ public class IniPage extends JFrame{
 		
 		btnOk.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				//String[] parts = txtEpos.getText().split("@");
-				//if (parts.length == 2 && parts[1].indexOf(".")!=-1){ // Check for only one @ and atleast one. -Ole
-					System.out.println("working");
-					GUI gui = new GUI(null);
-					//gui.login(txtEpos.getText());
-					disposeThis();
-					gui.show();
-				//}
+				/*if (core.validateEmail(txtEpos.text)){
+					
+				}*/
+				disposeThis();
+				PageHub hub = new PageHub();
+				hub.show();
 			}
 		});
 		btnOk.setBounds(150, 177, 89, 23);
