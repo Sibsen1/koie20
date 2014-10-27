@@ -9,9 +9,9 @@ public class GUI extends JFrame{
 
 	public Core CoreClass; 		// All kommunikasjon med resten av programmet skjer med denne. -Sindre
 	JTabbedPane contentPanel = new JTabbedPane();
-	//ReservePane reservePane = new ReservePane();
-	//AdminPane adminPane;
-	//MapPane mapPane;
+	ReservePane reservePane = new ReservePane();
+	AdminPane adminPane;
+	MapPane mapPane;
 	
 	private boolean userIsAdmin;
 	
@@ -19,13 +19,13 @@ public class GUI extends JFrame{
 		this.CoreClass = CoreClass;
 		this.setResizable(false);
 		getContentPane().add(contentPanel);
-		//mapPane	= new MapPane(this);
-		//adminPane = new AdminPane(this);
+		mapPane	= new MapPane(this);
+		adminPane = new AdminPane(this);
 		
-		//contentPanel.add("Reserver",reservePane);
-		//contentPanel.add("Kart",mapPane);
+		contentPanel.add("Reserver",reservePane);
+		contentPanel.add("Kart",mapPane);
 		//if (userIsAdmin){
-			//contentPanel.add("Admin",adminPane);
+			contentPanel.add("Admin",adminPane);
 		//}
 		
 		this.setSize(600, 500);
