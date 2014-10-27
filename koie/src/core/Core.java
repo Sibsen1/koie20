@@ -5,22 +5,24 @@ import gui.GUI;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.sql.ResultSet;
 
-	
-// Merknad: Alle individuelle kommentarer må være signert,
-// * med mindre de henger sammen, som dette. -Sindre
-
 public class Core {
 	
-	public String userEmail; // Vi trenger ingen brukerklasse før det viser 
-	public boolean isAdmin;	 // -> seg at disse to ikke er alt vi trenger.
+	public String userEmail; 
+	public boolean isAdmin;	
 	
 	final static String DBhostAddress = "jdbc:mysql://r.saggau.no:3306/koie20";
 	final static String DBUserName = "user";
 	final static String DBPassword = "koie20pw";
+
+	final static String KOIER = "koie";
+	final static String REPORTS = "rapport";
+	final static String RESERVATIONS = "reservations";
+	final static String USERS = "user";
 	
 	private GUI GUIClass;
 	private DBConnector DBClass;
@@ -30,43 +32,73 @@ public class Core {
 		DBClass = new DBConnector(this, DBhostAddress, DBUserName, DBPassword);
 	}
 
-	public void login(String email) {
-		this.userEmail = email;
-		//this.isAdmin = DBClass.checkAdmin(email);
+	public boolean login(String email) {
+		ArrayList<List<Object>> userList = getDataBaseColumns(USERS);
+		
+		for (List<Object> user: userList) {
+			String emailStr = (String) email;
+			
+			if (user.get(0) == emailStr) {
+				this.userEmail = emailStr;
+				this.isAdmin = (Boolean) user.get(1);
+				
+				return true;
+			}
+		}		
+		try {
+			DBClass.insertRow(USERS, email, false);
+			return true;
+			
+		} catch (SQLException e) {
+			DBFailure(e);
+			return false;
+		}
 	}
 	
-	public void reserve(String koie, String email, int persons, Date date, int days) {
+	public void insertReservation(int koieID, String email, int persons, Date startDate, int days) {
+		Calendar date = Calendar.getInstance();
+		date.setTime(startDate);
+		
+		try {
+			for (int i = 0; i < days; i++) {
+
+				for (int j = 0; j < persons; j++) {
+					DBClass.insertRow(RESERVATIONS, null, koieID, email, date);
+				}
+				
+				date.add(Calendar.DAY_OF_MONTH, 1);
+			}
+
+		} catch (SQLException e) {
+			DBFailure(e);
+		}
+	}
+	public void insertUser(String email, boolean isAdmin) {
 		// TODO
+		
 	}
 	
-	
-	public ArrayList<List<String>> getReports() {
+	public void insertKoie(String koieName, int beds, int tables, int year, String terrain, boolean hasBike, boolean isToppTur, boolean hasHuntingFishing, boolean hasGuitar, boolean hasWaffleIron, String specialities, float latitude, float longitude, String woodStatus) {
 		// TODO
-		return new ArrayList<List<String>>();
+		
 	}
 	
-	
-	public ArrayList<List<String>> insertReservation() {
+	public void insertReport(String email, int koieID, String text) {
 		// TODO
-		return new ArrayList<List<String>>();
-	}
-	
-	public ArrayList<List<String>> insertUser() {
-		// TODO
-		return new ArrayList<List<String>>();
-	}
-	
-	public ArrayList<List<String>> insertKoie() {
-		// TODO
-		return new ArrayList<List<String>>();
-	}
-	
-	public ArrayList<List<String>> insertReport() {
-		// TODO
-		return new ArrayList<List<String>>();
+		
 	}
 	
 	
+	public ArrayList<List<Object>> getReports(String... columns) {
+		try {
+			return resToList(DBClass.getQueryJoined(REPORTS, KOIER, "idkoie", columns));
+			
+		} catch (SQLException e) {
+			DBFailure(e);
+			return null;
+		}
+	}
+		
 	
 	public void deleteFromTable(String table, Object primaryKey) {
 		try {
@@ -92,14 +124,47 @@ public class Core {
 		return new ArrayList<List<String>>();
 	}
 	
+
+	public ArrayList<Object> getDataBaseRow(String table, String primaryKey, String... columns) {
+		ArrayList<String> resList;
+		try {
+			return (ArrayList<Object>) resToList(DBClass.getQueryCondition(table, null, primaryKey)).get(0);
+			
+		} catch (SQLException e) {
+			DBFailure(e);
+			return null;
+		}
+	}
+
+
+	public ArrayList<List<Object>> getDataBaseColumns(String table, String... columns) {
+		try {
+			return (resToList( DBClass.getQuery(table, columns)));
+		} catch (SQLException e) {
+			DBFailure(e);
+			return null;
+		}
+	}
 	
-	public static ArrayList<List<String>> resToList(ResultSet resultSet) {
+	
+	public void DBFailure(Exception e) {
+		// TODO Her påkaller den DBConnector disconnect og GUI shutdown
+		System.out.println("DBFailure():");
+		System.out.println("Her er programmet ment å krasje/endre tilstand! Årsak:");
 		
-		ArrayList<List<String>> results = new ArrayList<>();
+		e.printStackTrace();
+	}
+	
+	
+	public static ArrayList<List<Object>> resToList(ResultSet resultSet) {
+		
+		ArrayList<List<Object>> results = new ArrayList<List<Object>>();
 		try {
 			int columnCount = resultSet.getMetaData().getColumnCount();
+			
 			while (resultSet.next()) {
-				List<String> row = new ArrayList<>(columnCount);
+				ArrayList<Object> row = new ArrayList<Object>(columnCount);
+				
 				int i = 1;
 				while (i <= columnCount) {
 					row.add(resultSet.getString(i++));
@@ -114,28 +179,7 @@ public class Core {
 		
 	}
 	
-	public void DBFailure(Exception... e) {
-		// TODO Her påkaller den DBConnector disconnect og GUI shutdown
-		e[0].printStackTrace();
-	}
 
-	public ArrayList<String> getDataBaseRow(String table, String primaryKey, String... columns) {
-		return resToList(getQueryCondition(table, null, primaryKey)).get(0);
-	}
-
-
-	public ArrayList<List<String>> getDataBaseColumns(String table, String... columns) {
-		try {
-			return (resToList( DBClass.getQuery(table, columns)));
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return new ArrayList<List<String>>();
-	}
-	
-	// Husk! All bruk av DBConnector må gå igjennom en metode her først. -Sindre
-	
 	public static void main(String[] args) {
 		try {
 			Core core = new Core();

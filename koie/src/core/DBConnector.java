@@ -156,7 +156,7 @@ public class DBConnector {
 	}
 	
 	
-	private ResultSet getQueryCondition(String table, String rowIDColumn, Object rowID, String... columns) throws SQLException {
+	public ResultSet getQueryCondition(String table, String rowIDColumn, Object rowID, String... columns) throws SQLException {
 		if (rowIDColumn == null) {
 			rowIDColumn = tablePrimaryKey.get(table);
 		}
@@ -182,15 +182,26 @@ public class DBConnector {
 	}
 	
 
-	public ResultSet getQueryJoined(String DBName, String DB2Name, 
-			String matchingColumn1, String matchingColumn2, String... columns) throws SQLException {
-		// TODO
-		String SQLString = "";
+	public ResultSet getQueryJoined(String table1, String table2, String matchingColumn, String... columns) throws SQLException {
+
+		if (columns.length < 1)
+			return executeSQL(String.format("SELECT * FROM %s INNER JOIN %s ON %s=%s", table1, table2, matchingColumn, matchingColumn));
 		
-		// Gir en Resultset med tabellradene hvor matchingColumn1 == matchingColumn1
-		// * columns-argumentene som skal vises må skrives på form 'table.column'  -Sindre
 		
-		return executeSQL(SQLString);
+		StringBuilder sBuild = new StringBuilder();
+		int columnI = 0;
+		for (; columnI < columns.length - 1; columnI++) {
+			String column = columns[columnI];
+			
+			if (!column.contains("."))
+				throw new SQLException("'"+column+"' invalid argument. Must specify which table each column is from: <table>.<column>");
+			
+			sBuild.append(column);
+			sBuild.append(", ");
+		}
+		sBuild.append(columns[columnI]);
+		
+		return executeSQL(String.format("SELECT %s FROM %s INNER JOIN %s ON %s=%s", sBuild, table1, table2, matchingColumn, matchingColumn));
 		
 	}
 	
@@ -373,7 +384,9 @@ public class DBConnector {
 		
 		printResultSet(dbc.getQuery("user"));
 		
-		dbc.insertRow("user");
 		printResultSet(dbc.getQuery("user"));
+		
+		int i = 1;
+		Object x = (Object) i;
 	}
 }
