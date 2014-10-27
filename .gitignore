@@ -7,6 +7,7 @@
 .gradle
 .classpath
 .project
+.recommenders
 tmp/
 *.tmp
 *.bak
