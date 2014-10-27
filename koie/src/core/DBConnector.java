@@ -135,11 +135,12 @@ public class DBConnector {
 						DBhostAddress, DBUserName, DBPassword);
 	
 	}
-		
-	public ResultSet getQuery(String DBName, String... columns) throws SQLException {
+	
+	
+	public ResultSet getQuery(String table, String... columns) throws SQLException {
 		
 		if (columns.length < 1)
-			return executeSQL("SELECT * FROM "+ DBName);
+			return executeSQL("SELECT * FROM "+ table);
 		
 		StringBuilder sBuild = new StringBuilder();
 		int columnI = 0;
@@ -150,10 +151,37 @@ public class DBConnector {
 		}
 		sBuild.append(columns[columnI]);
 		
-		return executeSQL(String.format("SELECT %s FROM %s", sBuild, DBName));
+		return executeSQL(String.format("SELECT %s FROM %s", sBuild, table));
 		
-	}	
+	}
 	
+	
+	private ResultSet getQueryCondition(String table, String rowIDColumn, Object rowID, String... columns) throws SQLException {
+		if (rowIDColumn == null) {
+			rowIDColumn = tablePrimaryKey.get(table);
+		}
+		
+		if ("VARCHAR" == tableColumnTypes.get(table).get(rowIDColumn))
+				rowID = "'" + rowID + "'";
+		
+		System.out.println(String.format("SELECT * FROM %s WHERE %s=%s", table, rowIDColumn, rowID));
+		if (columns.length < 1)
+			return executeSQL(String.format("SELECT * FROM %s WHERE %s=%s", table, rowIDColumn, rowID));
+		
+		StringBuilder sBuild = new StringBuilder();
+		int columnI = 0;
+		for (; columnI < columns.length - 1; columnI++) {
+			
+			sBuild.append(columns[columnI]);
+			sBuild.append(", ");
+		}
+		sBuild.append(columns[columnI]);
+		
+		System.out.println((String.format("SELECT %s FROM %s WHERE %s=%s", sBuild, table, rowIDColumn, rowID)));
+		return executeSQL(String.format("SELECT %s FROM %s WHERE %s=%s", sBuild, table, rowIDColumn, rowID));
+	}
+	
+
 	public ResultSet getQueryJoined(String DBName, String DB2Name, 
 			String matchingColumn1, String matchingColumn2, String... columns) throws SQLException {
 		// TODO
@@ -173,7 +201,7 @@ public class DBConnector {
 		List<String> columnNames = tableColumnNames.get(table);
 		
 		if (WFLength < 1) {
-			executeSQL("INSERT INTO "+ table + "DEFAULT VALUES");
+			executeSQL("INSERT INTO (NULL) "+ table + " (NULL)");
 			return;
 			
 		} else if (WFLength != columnNames.size()) {			
@@ -249,16 +277,27 @@ public class DBConnector {
 	}
 
 	
-	public void editRow(String table, Object primaryKey, Object... writableFields) throws SQLException {
+	public void editRow(String table, String primaryKey, Object... writableFields) throws SQLException {
+		int nColumns = tableColumnNames.get(table).size();
 		
-		if (writableFields.length < 1) {
-			throw new SQLException("writableFields must have more than 0 elements");
+		if (writableFields.length != nColumns) {
+			throw new SQLException("'writableFields' must specify a value (like null) for each column. "
+					+ "Has " + writableFields.length + " elements, should have " + nColumns + ".");
 		}
+		
+		ResultSet tableRes = getQueryCondition(table, null, primaryKey);		
+		tableRes.first();
+		
+		for (int columnI = 0 ; columnI < nColumns; columnI++) {
+			if (writableFields[columnI] == null)
+				writableFields[columnI] = tableRes.getObject(columnI+1);
+		}
+		
 		
 		deleteRow(table, primaryKey);
 		insertRow(table, writableFields);
 	}
-	
+
 	private ResultSet executeSQL(String SQLString) throws SQLException { 
 		Statement statement = null;
 		ResultSet result = null;
@@ -267,7 +306,7 @@ public class DBConnector {
 			
 			statement = connection.createStatement(
 					ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
-			
+			System.out.println(SQLString);
 			if (statement.execute(SQLString)) {     // Returnerer 1 om query (SELECT), 0 om noe blir endret (eks. INSERT) -Sindre 
 				result = statement.getResultSet();
 			}
@@ -334,8 +373,7 @@ public class DBConnector {
 		
 		printResultSet(dbc.getQuery("user"));
 		
-		
-		
-		printResultSet(dbc.getQuery("reservations"));
+		dbc.insertRow("user");
+		printResultSet(dbc.getQuery("user"));
 	}
 }
