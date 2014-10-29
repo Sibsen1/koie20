@@ -2,6 +2,11 @@ package gui;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 
+import org.jdatepicker.impl.JDatePanelImpl;
+import org.jdatepicker.impl.JDatePickerImpl;
+import org.jdatepicker.impl.UtilDateModel;
+import org.jdatepicker.impl.*;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
@@ -33,6 +38,12 @@ public class ReservePane extends JPanel{
 		txtDato.setBounds(107, 239, 86, 20);
 		add(txtDato);
 		txtDato.setColumns(10);
+		
+		/*UtilDateModel model = new UtilDateModel();
+		JDatePanelImpl datePanel = new JDatePanelImpl(model);
+		JDatePickerImpl datePicker = new JDatePickerImpl(datePanel);
+		datePicker.setBounds(107, 239, 86, 20);
+		add(datePicker);*/
 		
 		JButton btnBekreft = new JButton("BEKREFT");
 		btnBekreft.addActionListener(new ActionListener() {

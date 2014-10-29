@@ -25,13 +25,17 @@ public class Core {
 	final static String USERS = "user";
 	
 	private GUI GUIClass;
-	private DBConnector DBClass;
+	public DBConnector DBClass;
 	
 	public Core() throws SQLException {
-		GUIClass = new GUI(this);
 		DBClass = new DBConnector(this, DBhostAddress, DBUserName, DBPassword);
+		GUIClass = new GUI(this);
 	}
 
+	public void showGUI(){
+		GUIClass.show();
+	}
+	
 	public boolean login(String email) {
 		ArrayList<List<Object>> userList = getDataBaseColumns(USERS);
 		
@@ -91,7 +95,7 @@ public class Core {
 	
 	public ArrayList<List<Object>> getReports(String... columns) {
 		try {
-			return resToList(DBClass.getQueryJoined(REPORTS, KOIER, "idkoie", columns));
+			return resToList(DBClass.getQueryJoined(REPORTS, KOIER, "koie.idkoie","rapport.koie_idkoie", columns));
 			
 		} catch (SQLException e) {
 			DBFailure(e);
@@ -139,7 +143,7 @@ public class Core {
 
 	public ArrayList<List<Object>> getDataBaseColumns(String table, String... columns) {
 		try {
-			return (resToList( DBClass.getQuery(table, columns)));
+			return (resToList(DBClass.getQuery(table, columns)));
 		} catch (SQLException e) {
 			DBFailure(e);
 			return null;

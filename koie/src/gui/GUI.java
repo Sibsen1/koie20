@@ -12,6 +12,7 @@ public class GUI extends JFrame{
 	ReservePane reservePane = new ReservePane();
 	AdminPane adminPane;
 	MapPane mapPane;
+	TablePane tablePane;
 	
 	private boolean userIsAdmin;
 	
@@ -21,9 +22,11 @@ public class GUI extends JFrame{
 		getContentPane().add(contentPanel);
 		mapPane	= new MapPane(this);
 		adminPane = new AdminPane(this);
+		tablePane = new TablePane(this);
 		
 		contentPanel.add("Reserver",reservePane);
 		contentPanel.add("Kart",mapPane);
+		contentPanel.add("Mer info",tablePane);
 		//if (userIsAdmin){
 			contentPanel.add("Admin",adminPane);
 		//}

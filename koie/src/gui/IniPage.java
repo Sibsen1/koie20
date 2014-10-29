@@ -4,10 +4,13 @@ import javax.swing.*;
 
 import com.alee.laf.WebLookAndFeel;
 
+import core.Core;
+
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
@@ -15,6 +18,7 @@ import java.awt.event.ActionEvent;
 public class IniPage extends JFrame{
 	JButton btnOk = new JButton("OK");
 	JTextPane txtEpos = new JTextPane();
+	Core core;
 	public IniPage() {
 		
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -34,10 +38,15 @@ public class IniPage extends JFrame{
 				//String[] parts = txtEpos.getText().split("@");
 				//if (parts.length == 2 && parts[1].indexOf(".")!=-1){ // Check for only one @ and atleast one. -Ole
 					System.out.println("working");
-					GUI gui = new GUI(null);
+					try {
+						core = new Core();
+						core.showGUI();
+						disposeThis();
+					} catch (SQLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 					//gui.login(txtEpos.getText());
-					disposeThis();
-					gui.show();
 				//}
 			}
 		});

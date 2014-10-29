@@ -4,6 +4,7 @@ import java.awt.CardLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,15 +12,21 @@ import core.Core;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+
 import java.awt.ScrollPane;
+
 import javax.swing.border.LineBorder;
+
 import java.awt.Color;
 
 public class AdminPane extends JPanel {
 	JPanel cards;
+	GUI g;
 	private JTextField txtAdmin;
 	private JTable tblRapport;
-	public AdminPane(GUI g) {
+	List<String> names;
+	public AdminPane(GUI gui) {
+		this.g = gui;
 		cards = new JPanel(new CardLayout());
 		CardLayout cardLayout = (CardLayout) cards.getLayout();
 		JPanel start = new JPanel();
@@ -33,12 +40,15 @@ public class AdminPane extends JPanel {
 		addNew.setSize(600,500);
 		
 		//---------------------- Start
-		ArrayList<String> names = new ArrayList<String>();
-		names.add("sdagaxxs");
-		names.add("sda222s");
-		names.add("sdaqqs");
-		names.add("sdsdas");
-		//names.addAll(g.CoreClass.getDataBaseColumns("koie", "koienavn").get(0));
+		//List<Object> names = new ArrayList<Object>();
+		//names.add("sdagaxxs");
+		//names.add("sda222s");
+		//names.add("sdaqqs");
+		//names.add("sdsdas");
+		names = new ArrayList<String>();
+		for (List<Object> o:g.CoreClass.getDataBaseColumns("koie", "koienavn")){
+			names.add(o.get(0).toString());
+		}
 		JList lstKoier = new JList(names.toArray());
 		lstKoier.setBorder(new LineBorder(new Color(0, 0, 0)));
 		lstKoier.setBounds(45, 44, 146, 330);
@@ -109,11 +119,11 @@ public class AdminPane extends JPanel {
 		btnAddAdmin.setBounds(348, 75, 89, 23);
 		start.add(btnAddAdmin);
 		
-		ArrayList<List<String>> rapport = new ArrayList<List<String>>();
 		String column_names[]= {"Bruker:","Koie:","Rapport:"};
-		DefaultTableModel table_model = new DefaultTableModel(column_names,3);//rapport.get(0).size()); //Lager headers og setter rowcount til antall rapporter
-		/*
-		rapport = g.CoreClass.getDataBaseColumns("rapport", "user_mail","koie_idkoie","rapporttext");
+		DefaultTableModel table_model = new DefaultTableModel(column_names,0);//rapport.get(0).size()); //Lager headers og setter rowcount til antall rapporter
+		
+		ArrayList<List<Object>> rapport = new ArrayList<List<Object>>();
+		/*rapport.addAll(g.CoreClass.getDataBaseColumns("rapport", "user_mail","koie_idkoie","rapporttext"));
 		ArrayList<Object[]> rows = new ArrayList<Object[]>();
 		for (int i = 0; i < rapport.size();i++){
 			rows.set(i,new Object[rapport.size()]);
@@ -123,14 +133,15 @@ public class AdminPane extends JPanel {
 		}          //using getdataBaseColums
 		
 		
-		for (int i = 1; i < g.CoreClass.getDataBaseColumns("koie", "idkoie").get(0).size();i++){
-			rapport.add(g.CoreClass.getRow("rapport",i));
-		}
-		
-		for (List<String> ls : rapport){
-			table_model.addRow(ls.toArray());
-		}*/          //using getRow
+		for (int i = 0; i < g.CoreClass.getDataBaseColumns("rapport", "idrapport").get(0).size();i++){
+			rapport.add(g.CoreClass.getDataBaseRow("rapport",Integer.toString(i),"user_mail","koie_idkoie","rapporttext"));
+		}*/
+		rapport = g.CoreClass.getReports("rapport.user_mail","koie.koienavn","rapport.rapporttext");
+		for (List<Object> o : rapport){
+			table_model.addRow(o.toArray());
+		} 
 		tblRapport = new JTable(table_model);
+		tblRapport.getTableHeader().setReorderingAllowed(false);
 		
 		JScrollPane jspB = new JScrollPane(tblRapport);
 		jspB.setBounds(289, 200, 281, 175);
@@ -151,5 +162,11 @@ public class AdminPane extends JPanel {
 		cards.add(addNew,"Add");
 		//------------------- Add end
 		add(cards);
+	}
+	public static void main(String[] args) throws SQLException {
+		Core core = new Core();
+		System.out.println(core.getDataBaseColumns("koie", "koienavn"));
+		
+		
 	}
 }

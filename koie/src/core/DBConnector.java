@@ -164,7 +164,7 @@ public class DBConnector {
 		if ("VARCHAR" == tableColumnTypes.get(table).get(rowIDColumn))
 				rowID = "'" + rowID + "'";
 		
-		System.out.println(String.format("SELECT * FROM %s WHERE %s=%s", table, rowIDColumn, rowID));
+		//System.out.println(String.format("SELECT * FROM %s WHERE %s=%s", table, rowIDColumn, rowID));
 		if (columns.length < 1)
 			return executeSQL(String.format("SELECT * FROM %s WHERE %s=%s", table, rowIDColumn, rowID));
 		
@@ -177,15 +177,15 @@ public class DBConnector {
 		}
 		sBuild.append(columns[columnI]);
 		
-		System.out.println((String.format("SELECT %s FROM %s WHERE %s=%s", sBuild, table, rowIDColumn, rowID)));
+		//System.out.println((String.format("SELECT %s FROM %s WHERE %s=%s", sBuild, table, rowIDColumn, rowID)));
 		return executeSQL(String.format("SELECT %s FROM %s WHERE %s=%s", sBuild, table, rowIDColumn, rowID));
 	}
 	
 
-	public ResultSet getQueryJoined(String table1, String table2, String matchingColumn, String... columns) throws SQLException {
+	public ResultSet getQueryJoined(String table1, String table2, String matchingColumn1,String matchingColumn2, String... columns) throws SQLException {
 
 		if (columns.length < 1)
-			return executeSQL(String.format("SELECT * FROM %s INNER JOIN %s ON %s=%s", table1, table2, matchingColumn, matchingColumn));
+			return executeSQL(String.format("SELECT * FROM %s INNER JOIN %s ON %s=%s", table1, table2, matchingColumn1, matchingColumn2));
 		
 		
 		StringBuilder sBuild = new StringBuilder();
@@ -201,7 +201,7 @@ public class DBConnector {
 		}
 		sBuild.append(columns[columnI]);
 		
-		return executeSQL(String.format("SELECT %s FROM %s INNER JOIN %s ON %s=%s", sBuild, table1, table2, matchingColumn, matchingColumn));
+		return executeSQL(String.format("SELECT %s FROM %s INNER JOIN %s ON %s=%s", sBuild, table1, table2, matchingColumn1, matchingColumn2));
 		
 	}
 	
@@ -317,7 +317,7 @@ public class DBConnector {
 			
 			statement = connection.createStatement(
 					ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
-			System.out.println(SQLString);
+			//System.out.println(SQLString);
 			if (statement.execute(SQLString)) {     // Returnerer 1 om query (SELECT), 0 om noe blir endret (eks. INSERT) -Sindre 
 				result = statement.getResultSet();
 			}

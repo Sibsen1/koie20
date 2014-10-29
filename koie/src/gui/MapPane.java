@@ -3,7 +3,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.List;
+
 import core.Core;
+
 import javax.swing.*;
 
 import org.openstreetmap.gui.jmapviewer.*;
@@ -39,32 +42,35 @@ public class MapPane extends JPanel {
 		labKoieInfo.setBackground(this.getBackground());
 		add(labKoieInfo);
 		
-		
-		ArrayList<String> names = new ArrayList();
-		//names.addAll(g.CoreClass.getDataBaseColumns("koie", "koienavn").get(0)); //Skal hente alle navn på koiene
-		names.add("fdhghf");
-		names.add("fdfhgh");
-		names.add("fdsdadf");
+
+		List<String>names = new ArrayList<String>();
+		for (List<Object> o:g.CoreClass.getDataBaseColumns("koie", "koienavn")){
+			names.add(o.get(0).toString());
+		}
+		//names.add("fdhghf");
+		//names.add("fdfhgh");
+		//names.add("fdsdadf");
 		ButtonGroup group = new ButtonGroup();
 		ArrayList<JRadioButton> buttons = new ArrayList();
-		for (String n:names){
-			buttons.add(new JRadioButton(n));
+		for (Object o:names){
+			buttons.add(new JRadioButton(o.toString()));
 			group.add(buttons.get(buttons.size()-1));
 			pnlKoier.add(buttons.get(buttons.size()-1));
 			buttons.get(buttons.size()-1).addActionListener(new ActionListener(){ //Skal vise kort info om valgt koie
 				@Override
 				public void actionPerformed(ActionEvent arg0) {
-					labKoieInfo.setText(n); 
+					labKoieInfo.setText(o.toString()); 
 				}
 			});
 		}
 		
 	
-		//double[][] koie_cords = (double[][])g.CoreClass.getDataBaseColumns("koie","latitude","longitude");
-		double[][] koie_cords = {{lat,lon}};
-	
-		for (double[] k: koie_cords){
-			mapPanel.addMapMarker(new MapMarkerDot(null, "Hytte", k[0], k[1]));
+		ArrayList<List<Object>> koie_cords = g.CoreClass.getDataBaseColumns("koie","latitude","longitude");
+		//double[][] koie_cords = {{lat,lon}};
+		int d = 0;
+		for (List<Object> k: koie_cords){
+			mapPanel.addMapMarker(new MapMarkerDot(null, names.get(d), Float.valueOf(k.get(0).toString()), Float.valueOf(k.get(1).toString())));
+			d++;
 		}
 		mapPanel.repaint();
 	}
