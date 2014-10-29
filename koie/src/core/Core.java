@@ -25,17 +25,28 @@ public class Core {
 	final static String USERS = "user";
 	
 	private GUI GUIClass;
-	public DBConnector DBClass;
+	private DBConnector DBClass;
 	
 	public Core() throws SQLException {
 		DBClass = new DBConnector(this, DBhostAddress, DBUserName, DBPassword);
 		GUIClass = new GUI(this);
 	}
-
+	
+	//Husk på å kopiere getKoieID, getWoodStatus og setWoodStatus insertuser
+	
 	public void showGUI(){
 		GUIClass.show();
 	}
 	
+	public int getKoieID(String koie) {
+		try {
+			return (int) resToList(DBClass.getQueryCondition("koie", "koienavn", koie, "idkoie")).get(0).get(0);			
+		} catch (SQLException e) {
+			DBFailure(e);
+			return -1;
+		}
+	}
+
 	public boolean login(String email) {
 		ArrayList<List<Object>> userList = getDataBaseColumns(USERS);
 		
@@ -78,7 +89,7 @@ public class Core {
 		}
 	}
 	public void insertUser(String email, boolean isAdmin) {
-		// TODO
+		
 		
 	}
 	
@@ -102,6 +113,23 @@ public class Core {
 			return null;
 		}
 	}
+	
+	public int getWoodStatus(String koie) {
+		try {
+			return (int) resToList(DBClass.getQueryCondition("koie", "koienavn", koie, "vedstatus")).get(0).get(0);			
+		} catch (SQLException e) {
+			DBFailure(e);
+			return -1;
+		}
+	}
+
+	public void setWoodStatus(String koie, int woodSacks) {
+		try {
+			DBClass.editRow("koie", getKoieID(koie), null, null, null, null, null, null, null, null, null, null, null, null, null, null, woodSacks);
+		} catch (SQLException e) {
+			DBFailure(e);
+		}
+	}
 		
 	
 	public void deleteFromTable(String table, Object primaryKey) {
@@ -118,9 +146,12 @@ public class Core {
 		return new ArrayList<List<String>>();
 	}
 	
-	public ArrayList<List<String>> editUser() {
-		// TODO
-		return new ArrayList<List<String>>();
+	public void editUser(String email, boolean isAdmin) {
+		try {
+			DBClass.editRow("user", email, isAdmin );
+		} catch (SQLException e) {
+			DBFailure(e);
+		}
 	}
 	
 	public ArrayList<List<String>> editKoie() {
@@ -143,7 +174,7 @@ public class Core {
 
 	public ArrayList<List<Object>> getDataBaseColumns(String table, String... columns) {
 		try {
-			return (resToList(DBClass.getQuery(table, columns)));
+			return (resToList( DBClass.getQuery(table, columns)));
 		} catch (SQLException e) {
 			DBFailure(e);
 			return null;
@@ -171,7 +202,7 @@ public class Core {
 				
 				int i = 1;
 				while (i <= columnCount) {
-					row.add(resultSet.getString(i++));
+					row.add(resultSet.getObject(i++));
 				}
 				results.add(row);
 			}
@@ -187,7 +218,11 @@ public class Core {
 	public static void main(String[] args) {
 		try {
 			Core core = new Core();
-			System.out.println(core.getDataBaseColumns("koie", "koienavn"));
+			System.out.println(core.getDataBaseColumns("koie", "idkoie"));
+			System.out.println(core.getKoieID("Kåsen"));
+			System.out.println(core.getWoodStatus("Kåsen"));
+			core.setWoodStatus("Kåsen", 7);
+			System.out.println(core.getWoodStatus("Kåsen"));
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
