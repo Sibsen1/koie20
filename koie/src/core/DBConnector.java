@@ -288,7 +288,7 @@ public class DBConnector {
 	}
 
 	
-	public void editRow(String table, String primaryKey, Object... writableFields) throws SQLException {
+	public void editRow(String table, Object primaryKey, Object... writableFields) throws SQLException {
 		int nColumns = tableColumnNames.get(table).size();
 		
 		if (writableFields.length != nColumns) {
