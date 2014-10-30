@@ -86,6 +86,7 @@ public class ReservePane extends JPanel{
 		add(lstKoie);
 		
 		JTextPane labReserve = new JTextPane();
+		labReserve.setEditable(false);
 		labReserve.setFont(new Font("Tahoma", Font.PLAIN, 26));
 		labReserve.setText("Reserver");
 		labReserve.setBounds(57, 77, 188, 39);

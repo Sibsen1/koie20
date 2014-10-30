@@ -40,19 +40,15 @@ public class AdminPane extends JPanel {
 		addNew.setSize(600,500);
 		
 		//---------------------- Start
-		//List<Object> names = new ArrayList<Object>();
-		//names.add("sdagaxxs");
-		//names.add("sda222s");
-		//names.add("sdaqqs");
-		//names.add("sdsdas");
 		names = new ArrayList<String>();
 		for (List<Object> o:g.CoreClass.getDataBaseColumns("koie", "koienavn")){
 			names.add(o.get(0).toString());
 		}
 		JList lstKoier = new JList(names.toArray());
-		lstKoier.setBorder(new LineBorder(new Color(0, 0, 0)));
-		lstKoier.setBounds(45, 44, 146, 330);
-		start.add(lstKoier);
+		JScrollPane jspL = new JScrollPane(lstKoier);
+		jspL.setBorder(new LineBorder(new Color(0, 0, 0)));
+		jspL.setBounds(45, 44, 146, 330);
+		start.add(jspL);
 		
 		JButton btnEdit = new JButton("Rediger");
 		btnEdit.addActionListener(new ActionListener() {
@@ -123,19 +119,6 @@ public class AdminPane extends JPanel {
 		DefaultTableModel table_model = new DefaultTableModel(column_names,0);//rapport.get(0).size()); //Lager headers og setter rowcount til antall rapporter
 		
 		ArrayList<List<Object>> rapport = new ArrayList<List<Object>>();
-		/*rapport.addAll(g.CoreClass.getDataBaseColumns("rapport", "user_mail","koie_idkoie","rapporttext"));
-		ArrayList<Object[]> rows = new ArrayList<Object[]>();
-		for (int i = 0; i < rapport.size();i++){
-			rows.set(i,new Object[rapport.size()]);
-			for (int k = 0; k < rapport.get(0).size();k++){
-				rows.get(k)[i] = rapport.get(i).get(k);
-			}
-		}          //using getdataBaseColums
-		
-		
-		for (int i = 0; i < g.CoreClass.getDataBaseColumns("rapport", "idrapport").get(0).size();i++){
-			rapport.add(g.CoreClass.getDataBaseRow("rapport",Integer.toString(i),"user_mail","koie_idkoie","rapporttext"));
-		}*/
 		rapport = g.CoreClass.getReports("rapport.user_mail","koie.koienavn","rapport.rapporttext");
 		for (List<Object> o : rapport){
 			table_model.addRow(o.toArray());
@@ -162,11 +145,5 @@ public class AdminPane extends JPanel {
 		cards.add(addNew,"Add");
 		//------------------- Add end
 		add(cards);
-	}
-	public static void main(String[] args) throws SQLException {
-		Core core = new Core();
-		System.out.println(core.getDataBaseColumns("koie", "koienavn"));
-		
-		
 	}
 }

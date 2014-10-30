@@ -1,4 +1,6 @@
 package gui;
+import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -27,16 +29,16 @@ public class MapPane extends JPanel {
 		this.add(mapPanel);
 		
 		JTextPane labKoier = new JTextPane();
+		labKoier.setEditable(false);
 		labKoier.setText("Koier:");
 		labKoier.setBounds(443, 38, 113, 20);
 		labKoier.setBackground(this.getBackground());
 		add(labKoier);
 		
-		JPanel pnlKoier = new JPanel(); 
-		pnlKoier.setBounds(420, 59, 121, 352);
-		add(pnlKoier);
+		
 		
 		JTextPane labKoieInfo = new JTextPane();
+		labKoieInfo.setEditable(false);
 		labKoieInfo.setText("Velg en koie for informasjon:");
 		labKoieInfo.setBounds(60, 381, 281, 49);
 		labKoieInfo.setBackground(this.getBackground());
@@ -47,9 +49,7 @@ public class MapPane extends JPanel {
 		for (List<Object> o:g.CoreClass.getDataBaseColumns("koie", "koienavn")){
 			names.add(o.get(0).toString());
 		}
-		//names.add("fdhghf");
-		//names.add("fdfhgh");
-		//names.add("fdsdadf");
+		JPanel pnlKoier = new JPanel(new GridLayout(0,1)); 
 		ButtonGroup group = new ButtonGroup();
 		ArrayList<JRadioButton> buttons = new ArrayList();
 		for (Object o:names){
@@ -63,10 +63,25 @@ public class MapPane extends JPanel {
 				}
 			});
 		}
+		JScrollPane jspB = new JScrollPane(pnlKoier);
+		jspB.setBounds(420, 59, 121, 352);
+		pnlKoier.setBounds(420, 59, 121, 352);
+		add(jspB);
 		
+		JButton btnReserver = new JButton("Reserver");
+		btnReserver.setBounds(321, 381, 89, 23);
+		add(btnReserver);
+		
+		JButton btnMerInfo = new JButton("Mer info");
+		btnMerInfo.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				g.switchPane("tablePane", labKoieInfo.getText());;
+			}
+		});
+		btnMerInfo.setBounds(321, 415, 89, 23);
+		add(btnMerInfo);
 	
 		ArrayList<List<Object>> koie_cords = g.CoreClass.getDataBaseColumns("koie","latitude","longitude");
-		//double[][] koie_cords = {{lat,lon}};
 		int d = 0;
 		for (List<Object> k: koie_cords){
 			mapPanel.addMapMarker(new MapMarkerDot(null, names.get(d), Float.valueOf(k.get(0).toString()), Float.valueOf(k.get(1).toString())));
