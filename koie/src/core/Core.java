@@ -132,7 +132,7 @@ public class Core {
 	public ArrayList<Object> getDataBaseRow(String table, String primaryKey, String... columns) {
 		ArrayList<String> resList;
 		try {
-			return (ArrayList<Object>) resToList(DBClass.getQueryCondition(table, null, primaryKey)).get(0);
+			return (ArrayList<Object>) resToList(DBClass.getQueryCondition(table, null, primaryKey,columns)).get(0);
 			
 		} catch (SQLException e) {
 			DBFailure(e);

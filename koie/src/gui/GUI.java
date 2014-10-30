@@ -35,6 +35,13 @@ public class GUI extends JFrame{
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 	}
+	
+	public void switchPane(String pane, String arg){
+		if (pane == "tablePane"){
+			contentPanel.setSelectedComponent(tablePane);
+			tablePane.showKoie(arg);
+		}
+	}
 		
 	public void login(String email) {
 		CoreClass.login(email);
