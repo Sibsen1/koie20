@@ -40,7 +40,7 @@ public class Core {
 	
 	public int getKoieID(String koie) {
 		try {
-			return (int) resToList(DBClass.getQueryCondition("koie", "koienavn", koie, "idkoie")).get(0).get(0);			
+			return (int) resToList(DBClass.getQueryCondition(KOIER, "koienavn", koie, "idkoie")).get(0).get(0);			
 		} catch (SQLException e) {
 			DBFailure(e);
 			return -1;
@@ -88,20 +88,32 @@ public class Core {
 			DBFailure(e);
 		}
 	}
-	public void insertUser(String email, boolean isAdmin) {
+	
+	public void insertReport(String email, String koie, String text, int vedStatus) {
 		
+		try {
+			DBClass.insertRow(REPORTS, email, getKoieID(koie), text);
+			setWoodStatus(koie, vedStatus);
+		} catch (SQLException e) {
+			DBFailure(e);
+		}
 		
 	}
+	
+	public void insertUser(String email, boolean isAdmin) {
+		try {
+			DBClass.insertRow(USERS, email, isAdmin);
+		} catch (SQLException e) {
+			DBFailure(e);
+		}		
+	}
+	
 	
 	public void insertKoie(String koieName, int beds, int tables, int year, String terrain, boolean hasBike, boolean isToppTur, boolean hasHuntingFishing, boolean hasGuitar, boolean hasWaffleIron, String specialities, float latitude, float longitude, String woodStatus) {
 		// TODO
 		
 	}
 	
-	public void insertReport(String email, int koieID, String text) {
-		// TODO
-		
-	}
 	
 	
 	public ArrayList<List<Object>> getReports(String... columns) {
@@ -154,16 +166,19 @@ public class Core {
 		}
 	}
 	
-	public ArrayList<List<String>> editKoie() {
-		// TODO
-		return new ArrayList<List<String>>();
+	public void editKoie(String koie, int sengeplasser, int bordplasser, int aar, String terreng, boolean sykkel, boolean topptur, String jaktfiske, boolean gitar, boolean vaffeljern, String spesialiteter, float latitude, float longitude, int vedstatus) {
+		try {
+			DBClass.editRow(KOIER, getKoieID(koie), sengeplasser, bordplasser, aar, terreng, sykkel, topptur, jaktfiske, gitar, vaffeljern, spesialiteter, latitude, longitude, vedstatus);
+		} catch (SQLException e) {
+			DBFailure(e);
+		}
 	}
 	
 
 	public ArrayList<Object> getDataBaseRow(String table, String primaryKey, String... columns) {
 		ArrayList<String> resList;
 		try {
-			return (ArrayList<Object>) resToList(DBClass.getQueryCondition(table, null, primaryKey)).get(0);
+			return (ArrayList<Object>) resToList(DBClass.getQueryCondition(table, null, primaryKey, columns)).get(0);
 			
 		} catch (SQLException e) {
 			DBFailure(e);
@@ -218,11 +233,9 @@ public class Core {
 	public static void main(String[] args) {
 		try {
 			Core core = new Core();
-			System.out.println(core.getDataBaseColumns("koie", "idkoie"));
-			System.out.println(core.getKoieID("Kåsen"));
-			System.out.println(core.getWoodStatus("Kåsen"));
-			core.setWoodStatus("Kåsen", 7);
-			System.out.println(core.getWoodStatus("Kåsen"));
+			System.out.println(core.getDataBaseColumns("user"));
+			core.insertUser("test@test.co.uk", false);
+			System.out.println(core.getDataBaseColumns("user"));
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
