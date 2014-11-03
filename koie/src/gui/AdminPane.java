@@ -1,6 +1,7 @@
 package gui;
 
 import java.awt.CardLayout;
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -10,6 +11,7 @@ import java.util.List;
 
 import core.Core;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 
@@ -18,13 +20,19 @@ import java.awt.ScrollPane;
 import javax.swing.border.LineBorder;
 
 import java.awt.Color;
+import java.io.File;
+import java.io.IOException;
 
 public class AdminPane extends JPanel {
 	JPanel cards;
 	GUI g;
 	private JTextField txtAdmin;
+	private JTextPane labOutput;
 	private JTable tblRapport;
 	List<String> names;
+	List<String> woods;
+	private JTextPane labWarning;
+	private JScrollPane jspW;
 	public AdminPane(GUI gui) {
 		this.g = gui;
 		cards = new JPanel(new CardLayout());
@@ -40,15 +48,41 @@ public class AdminPane extends JPanel {
 		addNew.setSize(600,500);
 		
 		//---------------------- Start
+		labWarning = new JTextPane();
+		labWarning.setEditable(false);
+		labWarning.setForeground(Color.RED);
+		jspW = new JScrollPane(labWarning);
+		jspW.setBounds(289, 385, 281, 50);
+		jspW.setVisible(false);
+		start.add(jspW);
 		names = new ArrayList<String>();
 		for (List<Object> o:g.CoreClass.getDataBaseColumns("koie", "koienavn")){
 			names.add(o.get(0).toString());
 		}
+		
+		woods = new ArrayList<String>();
+		for (Object o: names){
+			woods.add(Integer.toString(g.CoreClass.getWoodStatus(o.toString())));
+		}
+		for (int i = 0;i < woods.size();i++){
+			if (Integer.parseInt(woods.get(i)) < 3){
+				warningWood(names.get(i));
+			}
+		}
 		JList lstKoier = new JList(names.toArray());
-		JScrollPane jspL = new JScrollPane(lstKoier);
+		JList lstWood = new JList(woods.toArray());
+		lstKoier.setCellRenderer(new IconListRenderer());
+		lstWood.setCellRenderer(new IconListRenderer());
+		lstWood.setSelectionModel(new DisabledItemSelectionModel());
+		
+		JPanel lists = new JPanel();
+		lists.add(lstKoier);
+		lists.add(lstWood);
+		JScrollPane jspL = new JScrollPane(lists);
 		jspL.setBorder(new LineBorder(new Color(0, 0, 0)));
 		jspL.setBounds(45, 44, 146, 330);
 		start.add(jspL);
+		
 		
 		JButton btnEdit = new JButton("Rediger");
 		btnEdit.addActionListener(new ActionListener() {
@@ -81,17 +115,21 @@ public class AdminPane extends JPanel {
 		btnAdd.setBounds(45, 385, 81, 23);
 		start.add(btnAdd);
 		
-		JTextPane labKoier = new JTextPane();
-		labKoier.setText("Koier:");
-		labKoier.setBounds(45, 13, 112, 20);
+		JLabel labKoier = new JLabel();
+		labKoier.setText("Koier -");
+		labKoier.setBounds(45, 13, 52, 20);
 		labKoier.setBackground(this.getBackground());
 		start.add(labKoier);
+		JLabel labVed = new JLabel();
+		labVed.setText(" - Ved");
+		labVed.setBounds(120, 13, 52, 20);
+		labVed.setBackground(this.getBackground());
+		start.add(labVed);
 		
 		
 		
 		
-		
-		JTextPane labNewAdmin = new JTextPane();
+		JLabel labNewAdmin = new JLabel();
 		labNewAdmin.setText("Legg til ny admin:");
 		labNewAdmin.setBounds(348, 13, 112, 20);
 		labNewAdmin.setBackground(this.getBackground());
@@ -107,8 +145,12 @@ public class AdminPane extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				String[] parts = txtAdmin.getText().split("@");
 				if (parts.length == 2 && parts[1].indexOf(".")!=-1){
-					//g.coreClass.setAdmin(txtAdmin.getText()); //Skal sette admin til true for denne brukeren
+					//g.CoreClass.setAdmin(txtAdmin.getText()); //Skal sette admin til true for denne brukeren
 					txtAdmin.setText("");
+					labOutput.setText("OK!");
+				}
+				else {
+					labOutput.setText("Oppgi gyldig email.");
 				}
 			}
 		});
@@ -130,13 +172,21 @@ public class AdminPane extends JPanel {
 		jspB.setBounds(289, 200, 281, 175);
 		start.add(jspB);
 		
-		JTextPane labRapport = new JTextPane();
+		JLabel labRapport = new JLabel();
 		labRapport.setText("Liste over rapporter:");
-		labRapport.setBounds(289, 169, 134, 20);
+		labRapport.setBounds(289, 169, 171, 20);
 		labRapport.setBackground(this.getBackground());
 		start.add(labRapport);
 		
 		cards.add(start,"Start");
+		
+		labOutput = new JTextPane();
+		labOutput.setBackground(this.getBackground());
+		labOutput.setBounds(447, 78, 126, 50);
+		start.add(labOutput);
+		
+		
+		
 		
 		
 		//------------------- Start end
@@ -145,5 +195,43 @@ public class AdminPane extends JPanel {
 		cards.add(addNew,"Add");
 		//------------------- Add end
 		add(cards);
+	}
+	
+	public void warningWood(String name){
+		jspW.setVisible(true);
+		labWarning.setText(labWarning.getText()+ name + " har manglende ved! - ");
+		//g.CoreClass.warningMail(name); Sender mail om manglende ved
+	}
+	
+	public class IconListRenderer extends DefaultListCellRenderer {
+	    public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+	        JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+	        Icon icon = this.getIcon(list, value, index, isSelected, cellHasFocus, label);
+	        label.setIcon(icon);
+	        return label;
+	    }
+	    protected Icon getIcon(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus, JLabel label) {
+	    	try {
+	    		if (value.toString().length() < 3){
+	    			if (Integer.parseInt(value.toString()) < 3){
+	    				label.setForeground(Color.RED);
+	    				label.setBorder(new LineBorder(Color.RED));
+	    				return new ImageIcon(ImageIO.read(new File("resources/warning.png")));}
+	    			else return null;
+	    		}
+	    		else return null;
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				return null;
+			}
+	    }
+	}
+	class DisabledItemSelectionModel extends DefaultListSelectionModel {
+
+	    @Override
+	    public void setSelectionInterval(int index0, int index1) {
+	        super.setSelectionInterval(-1, -1);
+	    }
 	}
 }

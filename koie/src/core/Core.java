@@ -34,7 +34,8 @@ public class Core {
 	
 	//Husk på å kopiere getKoieID, getWoodStatus og setWoodStatus insertuser
 	
-	public void showGUI(){
+	public void showGUI(String email){
+		GUIClass.login(email);
 		GUIClass.show();
 	}
 	
@@ -47,13 +48,12 @@ public class Core {
 		}
 	}
 
-	public boolean login(String email) {
+	public boolean login(String emailArg) {
 		ArrayList<List<Object>> userList = getDataBaseColumns(USERS);
 		
 		for (List<Object> user: userList) {
-			String emailStr = (String) email;
-			
-			if (user.get(0) == emailStr) {
+			String emailStr = (String) user.get(0);
+			if (emailArg.equals(emailStr)) {
 				this.userEmail = emailStr;
 				this.isAdmin = (Boolean) user.get(1);
 				
@@ -61,7 +61,9 @@ public class Core {
 			}
 		}		
 		try {
-			DBClass.insertRow(USERS, email, false);
+			DBClass.insertRow(USERS, emailArg, false);
+			this.userEmail = emailArg;
+			this.isAdmin = false;
 			return true;
 			
 		} catch (SQLException e) {
@@ -70,17 +72,14 @@ public class Core {
 		}
 	}
 	
-	public void insertReservation(int koieID, String email, int persons, Date startDate, int days) {
+	public void insertReservation(int koieID, String email, Date startDate, int days) {
 		Calendar date = Calendar.getInstance();
 		date.setTime(startDate);
 		
 		try {
 			for (int i = 0; i < days; i++) {
 
-				for (int j = 0; j < persons; j++) {
-					DBClass.insertRow(RESERVATIONS, null, koieID, email, date);
-				}
-				
+				DBClass.insertRow(RESERVATIONS,null, koieID, email, date);
 				date.add(Calendar.DAY_OF_MONTH, 1);
 			}
 
@@ -92,8 +91,8 @@ public class Core {
 	public void insertReport(String email, String koie, String text, int vedStatus) {
 		
 		try {
-			DBClass.insertRow(REPORTS, email, getKoieID(koie), text);
-			setWoodStatus(koie, vedStatus);
+			DBClass.insertRow(REPORTS,0, email, getKoieID(koie), text);
+			//setWoodStatus(koie, vedStatus);
 		} catch (SQLException e) {
 			DBFailure(e);
 		}

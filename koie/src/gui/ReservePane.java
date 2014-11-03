@@ -2,9 +2,6 @@ package gui;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 
-import org.jdatepicker.impl.JDatePanelImpl;
-import org.jdatepicker.impl.JDatePickerImpl;
-import org.jdatepicker.impl.UtilDateModel;
 import org.jdatepicker.impl.*;
 
 import java.awt.*;
@@ -12,17 +9,24 @@ import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ReservePane extends JPanel{
-	private JTextField txtEpost;
+	private JTextField txtDager;
 	private JTextField txtDato;
-	public ReservePane() {
+	GUI g;
+	private ArrayList<String> names;
+	private JComboBox comboBox;
+	private JTextPane labKname;
+	public ReservePane(GUI gui) {
+		g = gui;
 		setLayout(null);
 		
-		txtEpost = new JTextField();
-		txtEpost.setBounds(107, 200, 86, 20);
-		add(txtEpost);
-		txtEpost.setColumns(10);
+		txtDager = new JTextField();
+		txtDager.setBounds(107, 200, 86, 20);
+		add(txtDager);
+		txtDager.setColumns(10);
 		
 		BufferedImage myPicture = null;
 		try {
@@ -48,27 +52,23 @@ public class ReservePane extends JPanel{
 		JButton btnBekreft = new JButton("BEKREFT");
 		btnBekreft.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				//Core.reserveKoie(args);
+				//Core.insertReservation(g.CoreClass.userEmail,);
 			}
 		});
 		btnBekreft.setBounds(107, 322, 86, 23);
 		add(btnBekreft);
 		
-		JButton btnTilbake = new JButton("TILBAKE");
-		btnTilbake.setBounds(345, 322, 89, 23);
-		add(btnTilbake);
-		
-		JTextPane labEpost = new JTextPane();
-		labEpost.setEditable(false);
-		labEpost.setText("Epost:");
-		labEpost.setBounds(54, 200, 43, 20);
-		labEpost.setBackground(this.getBackground());
-		add(labEpost);
+		JTextPane labDager = new JTextPane();
+		labDager.setEditable(false);
+		labDager.setText("Antall dager:");
+		labDager.setBounds(29, 200, 68, 20);
+		labDager.setBackground(this.getBackground());
+		add(labDager);
 		
 		JTextPane labDato = new JTextPane();
 		labDato.setEditable(false);
-		labDato.setText("Dato:");
-		labDato.setBounds(54, 239, 43, 20);
+		labDato.setText("Dato dd,mm,yyyy:");
+		labDato.setBounds(10, 231, 87, 39);
 		labDato.setBackground(this.getBackground());
 		add(labDato);
 		
@@ -79,21 +79,33 @@ public class ReservePane extends JPanel{
 		labKoie.setBackground(this.getBackground());
 		add(labKoie);
 		
-		JList lstKoie = new JList();
-		lstKoie.setBounds(107, 281, 86, 20);
-		//ArrayList<String> names = Core.getKoieNames();
-		//for s in names lstKoie.add(s)
-		add(lstKoie);
+		names = new ArrayList<String>();
+		for (List<Object> o:g.CoreClass.getDataBaseColumns("koie", "koienavn")){
+			names.add(o.get(0).toString());
+		}
+		comboBox = new JComboBox();
+		for (Object o: names){
+			comboBox.addItem(o);
+		}
+		ActionListener cbActionListener = new ActionListener() {//add actionlistner to listen for change
+            @Override
+            public void actionPerformed(ActionEvent e) {
+            	labKname.setText(names.get(comboBox.getSelectedIndex()));
+           }
+        };
+        comboBox.addActionListener(cbActionListener);
+		comboBox.setBounds(107, 281, 86, 20);
+		add(comboBox);
 		
-		JTextPane labReserve = new JTextPane();
-		labReserve.setEditable(false);
+		JLabel labReserve = new JLabel();
+		//labReserve.setEditable(false);
 		labReserve.setFont(new Font("Tahoma", Font.PLAIN, 26));
 		labReserve.setText("Reserver");
 		labReserve.setBounds(57, 77, 188, 39);
 		labReserve.setBackground(this.getBackground());
 		add(labReserve);
 		
-		JTextPane labKname = new JTextPane();
+		labKname = new JTextPane();
 		labKname.setText("temp");
 		labKname.setBounds(345, 239, 86, 20);
 		labKname.setBackground(this.getBackground());

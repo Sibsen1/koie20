@@ -9,7 +9,7 @@ public class GUI extends JFrame{
 
 	public Core CoreClass; 		// All kommunikasjon med resten av programmet skjer med denne. -Sindre
 	JTabbedPane contentPanel = new JTabbedPane();
-	ReservePane reservePane = new ReservePane();
+	ReservePane reservePane;
 	AdminPane adminPane;
 	MapPane mapPane;
 	TablePane tablePane;
@@ -20,6 +20,7 @@ public class GUI extends JFrame{
 		this.CoreClass = CoreClass;
 		this.setResizable(false);
 		getContentPane().add(contentPanel);
+		reservePane	= new ReservePane(this);
 		mapPane	= new MapPane(this);
 		adminPane = new AdminPane(this);
 		tablePane = new TablePane(this);

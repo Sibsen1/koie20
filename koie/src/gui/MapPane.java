@@ -12,9 +12,13 @@ import core.Core;
 import javax.swing.*;
 
 import org.openstreetmap.gui.jmapviewer.*;
+import java.awt.Font;
 
 public class MapPane extends JPanel {
-	public MapPane(GUI g) {
+	GUI g;
+	private JLabel labInfo;
+	public MapPane(GUI gui) {
+		g = gui;
 		this.setSize(600, 500);
 		JMapViewer mapPanel = new JMapViewer(); 
 		mapPanel.setBounds(10, 11, 400, 359);
@@ -28,10 +32,10 @@ public class MapPane extends JPanel {
 		this.setLayout(null);
 		this.add(mapPanel);
 		
-		JTextPane labKoier = new JTextPane();
-		labKoier.setEditable(false);
+		JLabel labKoier = new JLabel();
+		labKoier.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		labKoier.setText("Koier:");
-		labKoier.setBounds(443, 38, 113, 20);
+		labKoier.setBounds(438, 31, 113, 20);
 		labKoier.setBackground(this.getBackground());
 		add(labKoier);
 		
@@ -40,7 +44,7 @@ public class MapPane extends JPanel {
 		JTextPane labKoieInfo = new JTextPane();
 		labKoieInfo.setEditable(false);
 		labKoieInfo.setText("Velg en koie for informasjon:");
-		labKoieInfo.setBounds(60, 381, 281, 49);
+		labKoieInfo.setBounds(60, 381, 254, 20);
 		labKoieInfo.setBackground(this.getBackground());
 		add(labKoieInfo);
 		
@@ -49,6 +53,9 @@ public class MapPane extends JPanel {
 		for (List<Object> o:g.CoreClass.getDataBaseColumns("koie", "koienavn")){
 			names.add(o.get(0).toString());
 		}
+		
+		ArrayList<List<Object>> info = g.CoreClass.getDataBaseColumns("koie", "sengeplasser","bordplasser","aar");
+		
 		JPanel pnlKoier = new JPanel(new GridLayout(0,1)); 
 		ButtonGroup group = new ButtonGroup();
 		ArrayList<JRadioButton> buttons = new ArrayList();
@@ -59,7 +66,7 @@ public class MapPane extends JPanel {
 			buttons.get(buttons.size()-1).addActionListener(new ActionListener(){ //Skal vise kort info om valgt koie
 				@Override
 				public void actionPerformed(ActionEvent arg0) {
-					labKoieInfo.setText(o.toString()); 
+					labKoieInfo.setText(o.toString());
 				}
 			});
 		}
@@ -80,6 +87,10 @@ public class MapPane extends JPanel {
 		});
 		btnMerInfo.setBounds(321, 415, 89, 23);
 		add(btnMerInfo);
+		
+		labInfo = new JLabel();
+		labInfo.setBounds(60, 412, 254, 44);
+		add(labInfo);
 	
 		ArrayList<List<Object>> koie_cords = g.CoreClass.getDataBaseColumns("koie","latitude","longitude");
 		int d = 0;
