@@ -162,6 +162,7 @@ public class Core {
 	}
 
 	public void setWoodStatus(String koie, int woodSacks) {
+		System.out.println("setWW");
 		try {
 			DBClass.editRow("koie", getKoieID(koie), null, null, null, null, null, null, null, null, null, null, null, null, null, null, woodSacks);
 		} catch (SQLException e) {
@@ -259,8 +260,8 @@ public class Core {
 		try {
 			Core core = new Core();
 			System.out.println(core.getDataBaseColumns("user"));
-			//core.insertUser("test@test.co.uk", false);
-			//System.out.println(core.getDataBaseColumns("user"));
+			core.setWoodStatus("Flåkoia", 0);
+			System.out.println(core.getWoodStatus("Flåkoia"));
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
