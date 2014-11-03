@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.sql.ResultSet;
 
@@ -72,27 +73,49 @@ public class Core {
 		}
 	}
 	
-	public void insertReservation(int koieID, String email, Date startDate, int days) {
+	public boolean insertReservation(String koie, String email, int day, int month, int year) {
 		Calendar date = Calendar.getInstance();
-		date.setTime(startDate);
+		date.set(year, month-1, day);
 		
-		try {
-			for (int i = 0; i < days; i++) {
-
-				DBClass.insertRow(RESERVATIONS,null, koieID, email, date);
-				date.add(Calendar.DAY_OF_MONTH, 1);
+		boolean booket = false;
+		ArrayList<List<Object>> reservationsList = getDataBaseColumns(RESERVATIONS, "koie_idkoie", "date");
+		
+		for (int i = 0; i < reservationsList.size(); i++) {
+			
+			if ((int) reservationsList.get(i).get(0) == getKoieID(koie)) {
+				Calendar cal = new GregorianCalendar();
+				cal.setTime((Date) reservationsList.get(i).get(1));
+				
+				if (cal.get(Calendar.YEAR) == year && (cal.get(Calendar.MONTH))+1 == month 
+						&& cal.get(Calendar.DAY_OF_MONTH) == day) {
+					
+					booket = true;
+					
+				}
 			}
-
-		} catch (SQLException e) {
-			DBFailure(e);
+		}
+		
+		if (booket == false) {
+			
+			try {
+				DBClass.insertRow(RESERVATIONS, null, getKoieID(koie), email, date);
+				return true;
+			} catch (SQLException e) {
+				DBFailure(e);
+				return false;
+			}
+			
+		}
+		else {
+			return false; 
 		}
 	}
 	
 	public void insertReport(String email, String koie, String text, int vedStatus) {
 		
 		try {
-			DBClass.insertRow(REPORTS,0, email, getKoieID(koie), text);
-			//setWoodStatus(koie, vedStatus);
+			DBClass.insertRow(REPORTS, null, email, getKoieID(koie), text);
+			setWoodStatus(koie, vedStatus);
 		} catch (SQLException e) {
 			DBFailure(e);
 		}
