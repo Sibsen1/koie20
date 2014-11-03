@@ -13,8 +13,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.sun.javafx.scene.control.TableColumnSortTypeWrapper;
-
 public class DBConnector {
 	private Core CoreClass;
 	
@@ -272,7 +270,8 @@ public class DBConnector {
 		
 		//System.out.printf("INSERT INTO %s (%s) VALUES (%s)\n\n", table, columnsAdded, sBuild);
 		executeSQL(String.format("INSERT INTO %s (%s) VALUES (%s)", table, columnsAdded, sBuild));
-		}
+		
+	}
 	
 	
 	public void deleteRow(String table, Object primaryKey) throws SQLException {
@@ -290,7 +289,7 @@ public class DBConnector {
 
 	
 	public void editRow(String table, Object primaryKey, Object... writableFields) throws SQLException {
-		/*int nColumns = tableColumnNames.get(table).size();
+		int nColumns = tableColumnNames.get(table).size();
 		
 		if (writableFields.length != nColumns) {
 			throw new SQLException("'writableFields' must specify a value (like null) for each column. "
@@ -307,76 +306,9 @@ public class DBConnector {
 		
 		
 		deleteRow(table, primaryKey);
-		insertRow(table, writableFields);*/
-				
-		List<String> columnNames = tableColumnNames.get(table);
-			
-		if (writableFields.length != columnNames.size()) {			
-			throw new SQLException("Must have exactly "+ writableFields.length + " field-arguments "
-					+ "(can have fields which are null).");
-		}
-		
-		Map<String, String> columnTypes = tableColumnTypes.get(table);
-		
-		StringBuilder sBuild = new StringBuilder();
-		
-		int columnI = 0;
-		while (columnI < writableFields.length) {
-			Object argument = writableFields[columnI];
-					
-			if (argument == null)
-				continue;
-				
-			sBuild.append(columnNames.get(columnI));
-			sBuild.append(" = ");
-				
-			
-			switch (columnTypes.get(columnNames.get(columnI))) {
-			
-			case "DATE":
-				Calendar dateArg = (Calendar) argument;
-
-				sBuild.append("DATE('");
-				sBuild.append(dateArg.get(Calendar.YEAR)); sBuild.append("-");
-				sBuild.append(dateArg.get(Calendar.MONTH) + 1); sBuild.append("-");
-				sBuild.append(dateArg.get(Calendar.DAY_OF_MONTH));
-				sBuild.append("')");
-				break;
-				
-			case "TINYINT":
-				sBuild.append(writableFields[columnI]);
-				break;
-			case "INT":
-				sBuild.append(writableFields[columnI]);
-				break;
-				
-			default:
-				sBuild.append("'");
-				sBuild.append(writableFields[columnI]);
-				sBuild.append("'");
-				break;
-			}
-			
-			columnI++;
-			if (columnI < writableFields.length)
-				sBuild.append(", ");
-		
-		}
-		
-		switch (tablePrimaryKeyType.get(table)) {
-		case "INT": break;
-		case "TINYINT": break;
-		default:
-			primaryKey = "'"+primaryKey+"'";
-		}
-		
-		System.out.printf("UPDATE %s SET %s WHERE %s = %s", 		
-				table, sBuild, tablePrimaryKey.get(table), primaryKey);
-		executeSQL(String.format("UPDATE %s SET %s WHERE %s = %s", 		
-								table, sBuild, tablePrimaryKey.get(table), primaryKey));
+		insertRow(table, writableFields);
 	}
 
-	
 	private ResultSet executeSQL(String SQLString) throws SQLException { 
 		Statement statement = null;
 		ResultSet result = null;
@@ -451,7 +383,7 @@ public class DBConnector {
 		System.out.println();
 		
 		printResultSet(dbc.getQuery("user"));
-		dbc.editRow("user", "pai@tarte.fr", "pai@tarte.fr", true);
+		
 		printResultSet(dbc.getQuery("user"));
 		
 		int i = 1;
