@@ -18,6 +18,7 @@ import java.awt.event.ActionEvent;
 public class IniPage extends JFrame{
 	JButton btnOk = new JButton("OK");
 	JTextPane txtEpos = new JTextPane();
+	JLabel labOutput;
 	Core core;
 	public IniPage() {
 		
@@ -35,23 +36,27 @@ public class IniPage extends JFrame{
 		
 		btnOk.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				//String[] parts = txtEpos.getText().split("@");
-				//if (parts.length == 2 && parts[1].indexOf(".")!=-1){ // Check for only one @ and atleast one. -Ole
+				String[] parts = txtEmail.getText().split("@");
+				if (parts.length == 2 && parts[1].indexOf(".")!=-1){ // Check for only one @ and atleast one. -Ole
 					System.out.println("working");
 					try {
 						core = new Core();
-						core.showGUI();
+						core.showGUI(txtEmail.getText());
 						disposeThis();
 					} catch (SQLException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-					//gui.login(txtEpos.getText());
-				//}
+				}
+				else 
+					labOutput.setText("Ikke gyldig email.");
+					txtEmail.requestFocus();
 			}
 		});
+		txtEmail.requestFocus();
 		btnOk.setBounds(150, 177, 89, 23);
 		contentPane.add(btnOk);
+		this.getRootPane().setDefaultButton(btnOk);
 		
 		JPanel imgPanel = new JPanel();
 		imgPanel.setBounds(72, 11, 208, 101);
@@ -73,7 +78,11 @@ public class IniPage extends JFrame{
 		txtEpos.setText("Epost adresse:");
 		
 		imgPanel.add(picLabel);
-				
+		
+		labOutput = new JLabel();
+		labOutput.setBounds(66, 118, 214, 14);
+		contentPane.add(labOutput);
+		txtEmail.requestFocus();		
 	}	
 
 	public static void main(String[] args) {  
