@@ -154,7 +154,11 @@ public class Core {
 		} catch (SQLException e) {
 			DBFailure(e);
 			return -1;
+		} catch (IndexOutOfBoundsException e) {
+			DBFailure(new Exception("getWoodStatus('" + koie + "') returnerer en tom liste. "));
+			return -1;
 		}
+		
 	}
 
 	public void setWoodStatus(String koie, int woodSacks) {
@@ -255,8 +259,8 @@ public class Core {
 		try {
 			Core core = new Core();
 			System.out.println(core.getDataBaseColumns("user"));
-			core.insertUser("test@test.co.uk", false);
-			System.out.println(core.getDataBaseColumns("user"));
+			//core.insertUser("test@test.co.uk", false);
+			//System.out.println(core.getDataBaseColumns("user"));
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
