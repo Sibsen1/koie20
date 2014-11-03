@@ -177,7 +177,7 @@ public class DBConnector {
 		}
 		sBuild.append(columns[columnI]);
 		
-		//System.out.println((String.format("SELECT %s FROM %s WHERE %s=%s", sBuild, table, rowIDColumn, rowID)));
+		System.out.println((String.format("SELECT %s FROM %s WHERE %s=%s", sBuild, table, rowIDColumn, rowID)));
 		return executeSQL(String.format("SELECT %s FROM %s WHERE %s=%s", sBuild, table, rowIDColumn, rowID));
 	}
 	
@@ -289,18 +289,6 @@ public class DBConnector {
 
 	
 	public void editRow(String table, Object primaryKey, Object... writableFields) throws SQLException {
-		int nColumns = tableColumnNames.get(table).size();
-		/*int nColumns = tableColumnNames.get(table).size();
-		
-		if (writableFields.length != nColumns) {
-			throw new SQLException("'writableFields' must specify a value (like null) for each column. "
-@@ -306,9 +307,76 @@ public class DBConnector {
-		
-		
-		deleteRow(table, primaryKey);
-		insertRow(table, writableFields);
-		insertRow(table, writableFields);*/
-				
 		List<String> columnNames = tableColumnNames.get(table);
 			
 		if (writableFields.length != columnNames.size()) {			
@@ -316,8 +304,10 @@ public class DBConnector {
 		while (columnI < writableFields.length) {
 			Object argument = writableFields[columnI];
 					
-			if (argument == null)
+			if (argument == null) {
+				columnI++;
 				continue;
+			}
 				
 			sBuild.append(columnNames.get(columnI));
 			sBuild.append(" = ");
@@ -362,8 +352,8 @@ public class DBConnector {
 			primaryKey = "'"+primaryKey+"'";
 		}
 		
-		System.out.printf("UPDATE %s SET %s WHERE %s = %s", 		
-				table, sBuild, tablePrimaryKey.get(table), primaryKey);
+		//System.out.printf("UPDATE %s SET %s WHERE %s = %s", 		
+			//	table, sBuild, tablePrimaryKey.get(table), primaryKey);
 		executeSQL(String.format("UPDATE %s SET %s WHERE %s = %s", 		
 								table, sBuild, tablePrimaryKey.get(table), primaryKey));
 	}
