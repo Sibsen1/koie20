@@ -91,8 +91,8 @@ public class Core {
 	public void insertReport(String email, String koie, String text, int vedStatus) {
 		
 		try {
-			DBClass.insertRow(REPORTS,0, email, getKoieID(koie), text);
-			//setWoodStatus(koie, vedStatus);
+			DBClass.insertRow(REPORTS, null, email, getKoieID(koie), text);
+			setWoodStatus(koie, vedStatus);
 		} catch (SQLException e) {
 			DBFailure(e);
 		}
