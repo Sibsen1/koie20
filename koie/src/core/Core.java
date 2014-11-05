@@ -77,6 +77,7 @@ public class Core {
 		Calendar date = Calendar.getInstance();
 		date.setTime(dato);
 		
+		int reservations = 0;
 		boolean booket = false;
 		ArrayList<List<Object>> reservationsList = getDataBaseColumns(RESERVATIONS, "koie_idkoie", "date");
 		
@@ -89,12 +90,15 @@ public class Core {
 				if (cal.get(Calendar.YEAR) == date.get(Calendar.YEAR) && (cal.get(Calendar.MONTH))+1 == date.get(Calendar.MONTH)+1 
 						&& cal.get(Calendar.DAY_OF_MONTH) == date.get(Calendar.DAY_OF_MONTH)) {
 					
-					booket = true;
+					reservations++;
 					
 				}
 			}
 		}
 		
+		if (reservations >= (int) getDataBaseRow(KOIER, koie, "sengeplasser").get(0)) {
+			booket = true;
+		}
 		if (booket == false) {
 			
 			try {
