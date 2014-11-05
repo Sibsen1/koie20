@@ -107,8 +107,8 @@ public class DBConnector {
 			
 			try {
 				res.close();
-			} catch (SQLException e) {
-				e.printStackTrace();
+			} catch (NullPointerException e) {
+				
 			}
 		}	
 	}
@@ -177,7 +177,7 @@ public class DBConnector {
 		}
 		sBuild.append(columns[columnI]);
 		
-		//System.out.println((String.format("SELECT %s FROM %s WHERE %s=%s", sBuild, table, rowIDColumn, rowID)));
+		System.out.println((String.format("SELECT %s FROM %s WHERE %s=%s", sBuild, table, rowIDColumn, rowID)));
 		return executeSQL(String.format("SELECT %s FROM %s WHERE %s=%s", sBuild, table, rowIDColumn, rowID));
 	}
 	
