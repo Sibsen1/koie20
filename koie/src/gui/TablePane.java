@@ -8,6 +8,7 @@ import java.util.List;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.border.LineBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.JLabel;
 import javax.swing.JTextPane;
@@ -15,8 +16,11 @@ import javax.swing.JTextArea;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 
+import com.sun.prism.paint.Color;
+
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.Font;
 
 public class TablePane extends JPanel{
 	JTable tblKoier;
@@ -29,9 +33,10 @@ public class TablePane extends JPanel{
 	JComboBox comboBox;
 	GUI g;
 	JLabel labKoienavn;
-	JTextPane labInfo;
+	JLabel labInfo;
 	List<String> colnames;
 	String koiename;
+	private List<String> ncolnames;
 	public TablePane(GUI gui) {
 		this.g = gui;
 		setLayout(null);
@@ -45,9 +50,12 @@ public class TablePane extends JPanel{
 		String column_names[]= {"<html>Koie<br>navn:</html>","<html>Senge<br>plasser:</html>","<html>Bord<br>plasser:</html>", "Terreng:", "<html>Topp<br>tur:</html>", "<html>Jakt<br>fiske:</html>", "Spesialiteter:"};
 		String column[]= {"Koienavn:","Sengeplasser:","Bordplasser:","Terreng:","Topptur:","Jakt/fiske:","Spesialiteter"};
 		colnames = Arrays.asList(column);
-		for (int i = 0; i < g.CoreClass.getDataBaseColumns("koie","koienavn").size();i++){
-		 koieInfo.add(g.CoreClass.getDataBaseRow("koie", Integer.toString(i), "koienavn","sengeplasser","bordplasser","terreng","topptur","jaktfiske","spesialiteter"));//g.CoreClass.getDataBaseColumns("koie", null);
+		int maxSize = g.CoreClass.getDataBaseColumns("koie","koienavn").size();
+		for (int i = 0; i < maxSize;i++){
+			koieInfo.add(g.CoreClass.getDataBaseRow("koie", Integer.toString(i), "koienavn","sengeplasser","bordplasser","terreng","topptur","jaktfiske","spesialiteter"));//g.CoreClass.getDataBaseColumns("koie", null);
 		}
+		
+		
 		DefaultTableModel table_model = new DefaultTableModel(column_names,0) {
 		    @Override
 		    public boolean isCellEditable(int row, int column) {
@@ -63,25 +71,34 @@ public class TablePane extends JPanel{
 		jspB = new JScrollPane(tblKoier);
 		jspB.setBounds(0, 0, 600, 446);
 		start.add(jspB);
-		//cards.add(start,"Start");
+		cards.add(start,"Start");
 		//--------------
+		koieInfo.clear();
+		for (int i = 0; i < maxSize;i++){
+			koieInfo.add(g.CoreClass.getDataBaseRow("koie", Integer.toString(i)));//g.CoreClass.getDataBaseColumns("koie", null);
+		}
+		String[] newColumn = {"Koie nummer:","Koienavn:","Sengeplasser:","Bordplasser:","Bygget i:","Terreng:","Sykkel:","Topptur:","Jakt/fiske:","Gitar:","Vaffeljern:","Spesialiteter:","Latitude:","Longtitude:","Sekker ved:"};
+		ncolnames = Arrays.asList(newColumn);
 		cards.add(koie,"Koie");
 		koie.setLayout(null);
 		
 		labKoienavn = new JLabel();
+		labKoienavn.setFont(new Font("Tahoma", Font.BOLD, 18));
 		labKoienavn.setText("koienavn");
-		labKoienavn.setBounds(48, 49, 169, 44);
+		labKoienavn.setBounds(48, 11, 169, 44);
 		koie.add(labKoienavn);
 		
-		labInfo = new JTextPane();
-		labInfo.setContentType("text/html");
-		labInfo.setBounds(48, 102, 169, 257);
+		labInfo = new JLabel();
+		labInfo.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		labInfo.setBounds(48, 66, 132, 293);
 		koie.add(labInfo);
 		
 		JTextArea txtRapport = new JTextArea();
 		txtRapport.setLineWrap(true);
-		txtRapport.setBounds(349, 188, 214, 171);
-		koie.add(txtRapport);
+		JScrollPane jspT = new JScrollPane(txtRapport);
+		jspT.setBounds(349, 188, 214, 171);
+		jspT.setBorder(new LineBorder(new java.awt.Color(0, 0, 0)));
+		koie.add(jspT);
 		
 		JLabel labSkrivRapport = new JLabel();
 		labSkrivRapport.setText("Skriv rapport:");
@@ -130,17 +147,15 @@ public class TablePane extends JPanel{
 		cardLayout.show(cards,"Koie");
 		labKoienavn.setText(name);
 		comboBox.setSelectedIndex(g.CoreClass.getWoodStatus(name));
-		String texts = "";
-		List<Object> thisKoie = new ArrayList<Object>();
+		String texts = "<html>";
 		for (List<Object> o: koieInfo){
-			if (o.get(0).equals( name)){
-				thisKoie = o;
+			if (o.get(1).equals( name)){
 				int k = 0;
-				for (String s:colnames){
-					texts += s +"    "+ thisKoie.get(k).toString() + "<br><br>";
+				for (String s:ncolnames){
+					texts += s +"    "+ o.get(k).toString() + "<br>";
 					k++;
 				}
-				labInfo.setText(texts);
+				labInfo.setText(texts+"</html>");
 				break;
 			}
 		}

@@ -1,5 +1,7 @@
 package gui;
 
+import java.util.Map;
+
 import javax.swing.JFrame;
 import javax.swing.JTabbedPane;
 
@@ -22,15 +24,13 @@ public class GUI extends JFrame{
 		getContentPane().add(contentPanel);
 		reservePane	= new ReservePane(this);
 		mapPane	= new MapPane(this);
-		adminPane = new AdminPane(this);
+		
 		tablePane = new TablePane(this);
 		
 		contentPanel.add("Reserver",reservePane);
 		contentPanel.add("Kart",mapPane);
 		contentPanel.add("Mer info",tablePane);
-		//if (userIsAdmin){
-			contentPanel.add("Admin",adminPane);
-		//}
+		
 		
 		this.setSize(600, 500);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -47,6 +47,13 @@ public class GUI extends JFrame{
 	public void login(String email) {
 		CoreClass.login(email);
 		userIsAdmin = CoreClass.isAdmin;
+		if (userIsAdmin){
+			adminPane = new AdminPane(this);
+			contentPanel.add("Admin",adminPane);
+		}
+	}
+	public void displayWarnings(Map<String,Integer> koiewood){
+		reservePane.setWarnings(koiewood);
 	}
 }
 

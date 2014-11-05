@@ -7,7 +7,9 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import core.Core;
 
@@ -33,6 +35,13 @@ public class AdminPane extends JPanel {
 	List<String> woods;
 	private JTextPane labWarning;
 	private JScrollPane jspW;
+	ArrayList<List<Object>> rapport;
+	private JList lstKoier;
+	private JList lstWood;
+	private JScrollPane jspL;
+	private JPanel lists;
+	private JLabel labImgWarning;
+	private Map<String,Integer> warnings;
 	public AdminPane(GUI gui) {
 		this.g = gui;
 		cards = new JPanel(new CardLayout());
@@ -46,7 +55,7 @@ public class AdminPane extends JPanel {
 		cards.setSize(600, 500);
 		start.setSize(600,500);
 		addNew.setSize(600,500);
-		
+		warnings = new HashMap<String,Integer>();
 		//---------------------- Start
 		labWarning = new JTextPane();
 		labWarning.setEditable(false);
@@ -55,30 +64,29 @@ public class AdminPane extends JPanel {
 		jspW.setBounds(289, 385, 281, 50);
 		jspW.setVisible(false);
 		start.add(jspW);
-		names = new ArrayList<String>();
-		for (List<Object> o:g.CoreClass.getDataBaseColumns("koie", "koienavn")){
-			names.add(o.get(0).toString());
+		labImgWarning = new JLabel();
+		labImgWarning.setBounds(263, 385, 26, 50);
+		labImgWarning.setVisible(false);;
+		try {
+			labImgWarning.setIcon(new ImageIcon(ImageIO.read(new File("resources/warning.png"))));
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
 		}
+		start.add(labImgWarning);
 		
+		names = new ArrayList<String>();
 		woods = new ArrayList<String>();
-		for (Object o: names){
-			woods.add(Integer.toString(g.CoreClass.getWoodStatus(o.toString())));
-		}
-		for (int i = 0;i < woods.size();i++){
-			if (Integer.parseInt(woods.get(i)) < 3){
-				warningWood(names.get(i));
-			}
-		}
-		JList lstKoier = new JList(names.toArray());
-		JList lstWood = new JList(woods.toArray());
+		updateInfo();
+		
 		lstKoier.setCellRenderer(new IconListRenderer());
 		lstWood.setCellRenderer(new IconListRenderer());
 		lstWood.setSelectionModel(new DisabledItemSelectionModel());
 		
-		JPanel lists = new JPanel();
+		lists = new JPanel();
 		lists.add(lstKoier);
 		lists.add(lstWood);
-		JScrollPane jspL = new JScrollPane(lists);
+		jspL = new JScrollPane(lists);
 		jspL.setBorder(new LineBorder(new Color(0, 0, 0)));
 		jspL.setBounds(45, 44, 146, 330);
 		start.add(jspL);
@@ -145,9 +153,10 @@ public class AdminPane extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				String[] parts = txtAdmin.getText().split("@");
 				if (parts.length == 2 && parts[1].indexOf(".")!=-1){
-					//g.CoreClass.setAdmin(txtAdmin.getText()); //Skal sette admin til true for denne brukeren
-					txtAdmin.setText("");
-					labOutput.setText("OK!");
+					if (g.CoreClass.editUser(txtAdmin.getText(),true)){ 
+						txtAdmin.setText("");
+						labOutput.setText("OK!");
+					}
 				}
 				else {
 					labOutput.setText("Oppgi gyldig email.");
@@ -160,7 +169,7 @@ public class AdminPane extends JPanel {
 		String column_names[]= {"Bruker:","Koie:","Rapport:"};
 		DefaultTableModel table_model = new DefaultTableModel(column_names,0);//rapport.get(0).size()); //Lager headers og setter rowcount til antall rapporter
 		
-		ArrayList<List<Object>> rapport = new ArrayList<List<Object>>();
+		rapport = new ArrayList<List<Object>>();
 		rapport = g.CoreClass.getReports("rapport.user_mail","koie.koienavn","rapport.rapporttext");
 		for (List<Object> o : rapport){
 			table_model.addRow(o.toArray());
@@ -169,12 +178,12 @@ public class AdminPane extends JPanel {
 		tblRapport.getTableHeader().setReorderingAllowed(false);
 		
 		JScrollPane jspB = new JScrollPane(tblRapport);
-		jspB.setBounds(289, 200, 281, 175);
+		jspB.setBounds(218, 200, 352, 175);
 		start.add(jspB);
 		
 		JLabel labRapport = new JLabel();
 		labRapport.setText("Liste over rapporter:");
-		labRapport.setBounds(289, 169, 171, 20);
+		labRapport.setBounds(218, 169, 192, 20);
 		labRapport.setBackground(this.getBackground());
 		start.add(labRapport);
 		
@@ -184,6 +193,20 @@ public class AdminPane extends JPanel {
 		labOutput.setBackground(this.getBackground());
 		labOutput.setBounds(447, 78, 126, 50);
 		start.add(labOutput);
+		
+		JButton btnOppdater = new JButton("Oppdater");
+		btnOppdater.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				lstKoier.removeAll();
+				lstWood.removeAll();
+				updateInfo();
+				jspL = new JScrollPane(lists);
+			}
+		});
+		btnOppdater.setBounds(481, 166, 89, 23);
+		start.add(btnOppdater);
+		
+		
 		
 		
 		
@@ -197,9 +220,37 @@ public class AdminPane extends JPanel {
 		add(cards);
 	}
 	
+	public void updateInfo(){
+		names.clear();
+		woods.clear();
+		
+		for (List<Object> o:g.CoreClass.getDataBaseColumns("koie", "koienavn")){
+			names.add(o.get(0).toString());
+		}
+		
+		woods = new ArrayList<String>();
+		for (Object o: names){
+			woods.add(Integer.toString(g.CoreClass.getWoodStatus(o.toString())));
+			System.out.print(g.CoreClass.getWoodStatus(o.toString())+"-");
+		}
+		System.out.println("");
+		labWarning.setText("");
+		for (int i = 0;i < woods.size();i++){
+			if (Integer.parseInt(woods.get(i)) < 3){
+				warningWood(names.get(i));
+				warnings.put(names.get(i), Integer.parseInt(woods.get(i)));
+			}
+		}
+		g.displayWarnings(warnings);
+		lstKoier = new JList(names.toArray());
+		lstWood = new JList(woods.toArray());
+	}
+	
+	
 	public void warningWood(String name){
 		jspW.setVisible(true);
 		labWarning.setText(labWarning.getText()+ name + " har manglende ved! - ");
+		labImgWarning.setVisible(true);
 		//g.CoreClass.warningMail(name); Sender mail om manglende ved
 	}
 	

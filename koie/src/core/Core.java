@@ -73,9 +73,9 @@ public class Core {
 		}
 	}
 	
-	public boolean insertReservation(String koie, String email, int day, int month, int year) {
+	public boolean insertReservation(String koie, String email, Date dato) {
 		Calendar date = Calendar.getInstance();
-		date.set(year, month-1, day);
+		date.setTime(dato);
 		
 		boolean booket = false;
 		ArrayList<List<Object>> reservationsList = getDataBaseColumns(RESERVATIONS, "koie_idkoie", "date");
@@ -86,8 +86,8 @@ public class Core {
 				Calendar cal = new GregorianCalendar();
 				cal.setTime((Date) reservationsList.get(i).get(1));
 				
-				if (cal.get(Calendar.YEAR) == year && (cal.get(Calendar.MONTH))+1 == month 
-						&& cal.get(Calendar.DAY_OF_MONTH) == day) {
+				if (cal.get(Calendar.YEAR) == date.get(Calendar.YEAR) && (cal.get(Calendar.MONTH))+1 == date.get(Calendar.MONTH)+1 
+						&& cal.get(Calendar.DAY_OF_MONTH) == date.get(Calendar.DAY_OF_MONTH)) {
 					
 					booket = true;
 					
@@ -162,7 +162,7 @@ public class Core {
 	}
 
 	public void setWoodStatus(String koie, int woodSacks) {
-		System.out.println("setWW");
+		//System.out.println("setWW");
 		try {
 			DBClass.editRow("koie", getKoieID(koie), null, null, null, null, null, null, null, null, null, null, null, null, null, null, woodSacks);
 		} catch (SQLException e) {
@@ -185,12 +185,28 @@ public class Core {
 		return new ArrayList<List<String>>();
 	}
 	
-	public void editUser(String email, boolean isAdmin) {
+	public boolean editUser(String email, boolean isAdmin) {
 		try {
-			DBClass.editRow("user", email, isAdmin );
+			ArrayList<List<Object>> userList = getDataBaseColumns(USERS);
+			for (List<Object> user: userList) {
+				String emailStr = (String) user.get(0);
+				if (email.equals(emailStr)) {
+					DBClass.editRow("user", email, email, isAdmin);
+					return true;
+				}
+			}		
 		} catch (SQLException e) {
 			DBFailure(e);
 		}
+		try {
+			DBClass.insertRow(USERS, email, isAdmin);
+			return true;
+			
+		} catch (SQLException e) {
+			DBFailure(e);
+			return false;
+		}
+		
 	}
 	
 	public void editKoie(String koie, int sengeplasser, int bordplasser, int aar, String terreng, boolean sykkel, boolean topptur, String jaktfiske, boolean gitar, boolean vaffeljern, String spesialiteter, float latitude, float longitude, int vedstatus) {
@@ -256,7 +272,7 @@ public class Core {
 	}
 	
 
-	public static void main(String[] args) {
+	/*public static void main(String[] args) {
 		try {
 			Core core = new Core();
 			System.out.println(core.getDataBaseColumns("user"));
@@ -266,5 +282,5 @@ public class Core {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}
+	}*/
 }

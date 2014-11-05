@@ -177,7 +177,7 @@ public class DBConnector {
 		}
 		sBuild.append(columns[columnI]);
 		
-		System.out.println((String.format("SELECT %s FROM %s WHERE %s=%s", sBuild, table, rowIDColumn, rowID)));
+		//System.out.println((String.format("SELECT %s FROM %s WHERE %s=%s", sBuild, table, rowIDColumn, rowID)));
 		return executeSQL(String.format("SELECT %s FROM %s WHERE %s=%s", sBuild, table, rowIDColumn, rowID));
 	}
 	
@@ -291,7 +291,8 @@ public class DBConnector {
 	public void editRow(String table, Object primaryKey, Object... writableFields) throws SQLException {
 		List<String> columnNames = tableColumnNames.get(table);
 			
-		if (writableFields.length != columnNames.size()) {			
+		if (writableFields.length != columnNames.size()) {
+			System.out.println(writableFields.length+"-"+columnNames.size());
 			throw new SQLException("Must have exactly "+ writableFields.length + " field-arguments "
 					+ "(can have fields which are null).");
 		}
