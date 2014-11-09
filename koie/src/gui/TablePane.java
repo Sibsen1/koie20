@@ -16,7 +16,6 @@ import javax.swing.JTextArea;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 
-import com.sun.prism.paint.Color;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -37,6 +36,7 @@ public class TablePane extends JPanel{
 	List<String> colnames;
 	String koiename;
 	private List<String> ncolnames;
+	private JTextArea txtRapport;
 	public TablePane(GUI gui) {
 		this.g = gui;
 		setLayout(null);
@@ -90,10 +90,10 @@ public class TablePane extends JPanel{
 		
 		labInfo = new JLabel();
 		labInfo.setFont(new Font("Tahoma", Font.PLAIN, 14));
-		labInfo.setBounds(48, 66, 132, 293);
+		labInfo.setBounds(48, 66, 169, 381);
 		koie.add(labInfo);
 		
-		JTextArea txtRapport = new JTextArea();
+		txtRapport = new JTextArea();
 		txtRapport.setLineWrap(true);
 		JScrollPane jspT = new JScrollPane(txtRapport);
 		jspT.setBounds(349, 188, 214, 171);

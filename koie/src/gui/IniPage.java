@@ -20,6 +20,7 @@ public class IniPage extends JFrame{
 	JTextPane txtEpos = new JTextPane();
 	JLabel labOutput;
 	Core core;
+	private JTextField txtEmail;
 	public IniPage() {
 		
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -29,7 +30,7 @@ public class IniPage extends JFrame{
 		contentPane.setLayout(null);
 		
 		
-		JTextField txtEmail = new JTextField();
+		txtEmail = new JTextField();
 		txtEmail.setBounds(10, 143, 364, 23);
 		contentPane.add(txtEmail);
 		
