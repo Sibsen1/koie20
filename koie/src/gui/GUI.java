@@ -1,5 +1,6 @@
 package gui;
 
+import java.util.List;
 import java.util.Map;
 
 import javax.swing.JFrame;
@@ -42,6 +43,10 @@ public class GUI extends JFrame{
 			contentPanel.setSelectedComponent(tablePane);
 			tablePane.showKoie(arg);
 		}
+		if (pane == "reservePane"){
+			contentPanel.setSelectedComponent(reservePane);
+			reservePane.setReserve(arg);
+		}
 	}
 		
 	public void login(String email) {
@@ -55,5 +60,6 @@ public class GUI extends JFrame{
 	public void displayWarnings(Map<String,Integer> koiewood){
 		reservePane.setWarnings(koiewood);
 	}
+
 }
 

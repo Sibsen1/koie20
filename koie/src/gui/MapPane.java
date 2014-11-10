@@ -22,6 +22,7 @@ public class MapPane extends JPanel {
 	GUI g;
 	private JLabel labInfo;
 	private JLabel labData;
+	private JLabel labKoieInfo;
 	public MapPane(GUI gui) {
 		g = gui;
 		this.setSize(600, 500);
@@ -46,7 +47,7 @@ public class MapPane extends JPanel {
 		
 		
 		
-		JLabel labKoieInfo = new JLabel();
+		labKoieInfo = new JLabel();
 		labKoieInfo.setFont(new Font("Tahoma", Font.BOLD, 14));
 		labKoieInfo.setText("Velg en koie for informasjon:");
 		labKoieInfo.setBounds(61, 370, 250, 20);
@@ -87,6 +88,11 @@ public class MapPane extends JPanel {
 		add(jspB);
 		
 		JButton btnReserver = new JButton("Reserver");
+		btnReserver.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				g.switchPane("reservePane", labKoieInfo.getText());
+			}
+		});
 		btnReserver.setBounds(321, 381, 89, 23);
 		add(btnReserver);
 		
