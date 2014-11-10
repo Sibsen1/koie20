@@ -90,13 +90,13 @@ public class Core {
 		}
 	}
 	
-	public boolean insertReservation(String koie, String email, Date dato) {
+	public boolean insertReservation(String koie, String email, Date dato, int antallPersoner) {
 		Calendar date = Calendar.getInstance();
 		date.setTime(dato);
 		
 		int reservations = 0;
 		boolean booket = false;
-		ArrayList<List<Object>> reservationsList = getDataBaseColumns(RESERVATIONS, "koie_idkoie", "date");
+		ArrayList<List<Object>> reservationsList = getDataBaseColumns(RESERVATIONS, "koie_idkoie", "date","antall_personer");
 		
 		for (int i = 0; i < reservationsList.size(); i++) {
 			
@@ -112,7 +112,6 @@ public class Core {
 				}
 			}
 		}
-		
 		if (reservations >= (int) getDataBaseRow(KOIER, koie, "sengeplasser").get(0)) {
 			booket = true;
 		}
@@ -185,7 +184,7 @@ public class Core {
 	public void setWoodStatus(String koie, int woodSacks) {
 		//System.out.println("setWW");
 		try {
-			DBClass.editRow("koie", getKoieID(koie), null, null, null, null, null, null, null, null, null, null, null, null, null, null, woodSacks);
+			DBClass.editRow("koie", getKoieID(koie), null, null, null, null, null, null, null, null, null, null, null, null, null, null, woodSacks,null);
 		} catch (SQLException e) {
 			DBFailure(e);
 		}
@@ -230,9 +229,9 @@ public class Core {
 		
 	}
 	
-	public void editKoie(String koie, int sengeplasser, int bordplasser, int aar, String terreng, boolean sykkel, boolean topptur, String jaktfiske, boolean gitar, boolean vaffeljern, String spesialiteter, float latitude, float longitude, int vedstatus) {
+	public void editKoie(String koie, int sengeplasser, int bordplasser, String aar, String terreng, String sykkel, String topptur, String jaktfiske, String gitar, String vaffeljern, String spesialiteter, float latitude, float longitude, int vedstatus, String fraktes) {
 		try {
-			DBClass.editRow(KOIER, getKoieID(koie), sengeplasser, bordplasser, aar, terreng, sykkel, topptur, jaktfiske, gitar, vaffeljern, spesialiteter, latitude, longitude, vedstatus);
+			DBClass.editRow(KOIER, getKoieID(koie),null,koie, sengeplasser, bordplasser, aar, terreng, sykkel, topptur, jaktfiske, gitar, vaffeljern, spesialiteter, latitude, longitude, vedstatus, fraktes);
 		} catch (SQLException e) {
 			DBFailure(e);
 		}
