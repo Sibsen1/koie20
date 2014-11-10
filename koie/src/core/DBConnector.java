@@ -107,8 +107,8 @@ public class DBConnector {
 			
 			try {
 				res.close();
-			} catch (SQLException e) {
-				e.printStackTrace();
+			} catch (NullPointerException e) {
+				
 			}
 		}	
 	}
@@ -161,12 +161,29 @@ public class DBConnector {
 			rowIDColumn = tablePrimaryKey.get(table);
 		}
 		
-		if ("VARCHAR" == tableColumnTypes.get(table).get(rowIDColumn))
-				rowID = "'" + rowID + "'";
+		String rowIDString = "";
 		
-		//System.out.println(String.format("SELECT * FROM %s WHERE %s=%s", table, rowIDColumn, rowID));
+		switch (tableColumnTypes.get(table).get(rowIDColumn)) {
+		
+			case "DATE":
+				Calendar rowIDCal = (Calendar) rowID;
+				
+				rowIDString = "DATE('"
+						+ rowIDCal.get(Calendar.YEAR) + "-"
+						+ (rowIDCal.get(Calendar.MONTH) + 1) + "-"
+						+ rowIDCal.get(Calendar.DAY_OF_MONTH)
+						+ "')";
+				break;
+			case "VARCHAR":
+				rowID = "'" + rowID + "'";
+				break;
+			default:
+				rowIDString = "" + rowID;		
+		}
+		
+		//System.out.println(String.format("SELECT * FROM %s WHERE %s=%s", table, rowIDColumn, rowIDString));
 		if (columns.length < 1)
-			return executeSQL(String.format("SELECT * FROM %s WHERE %s=%s", table, rowIDColumn, rowID));
+			return executeSQL(String.format("SELECT * FROM %s WHERE %s=%s", table, rowIDColumn, rowIDString));
 		
 		StringBuilder sBuild = new StringBuilder();
 		int columnI = 0;
@@ -177,8 +194,8 @@ public class DBConnector {
 		}
 		sBuild.append(columns[columnI]);
 		
-		//System.out.println((String.format("SELECT %s FROM %s WHERE %s=%s", sBuild, table, rowIDColumn, rowID)));
-		return executeSQL(String.format("SELECT %s FROM %s WHERE %s=%s", sBuild, table, rowIDColumn, rowID));
+		//System.out.println((String.format("SELECT %s FROM %s WHERE %s=%s", sBuild, table, rowIDColumn, rowIDString)));
+		return executeSQL(String.format("SELECT %s FROM %s WHERE %s=%s", sBuild, table, rowIDColumn, rowIDString));
 	}
 	
 
