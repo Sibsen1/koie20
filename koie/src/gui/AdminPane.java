@@ -24,6 +24,7 @@ import javax.swing.border.LineBorder;
 
 import java.awt.Color;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.awt.Font;
 
@@ -403,7 +404,7 @@ public class AdminPane extends JPanel {
 	    			if (Integer.parseInt(value.toString()) < 3){
 	    				label.setForeground(Color.RED);
 	    				label.setBorder(new LineBorder(Color.RED));
-	    				return new ImageIcon(ImageIO.read(new File("resources/warning.png")));}
+	    				return new ImageIcon(ImageIO.read(this.getClass().getClassLoader().getResourceAsStream("warning.png")));}
 	    			else return null;
 	    		}
 	    		else return null;

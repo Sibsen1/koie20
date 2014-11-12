@@ -9,6 +9,7 @@ import core.Core;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.awt.event.ActionListener;
@@ -65,7 +66,7 @@ public class IniPage extends JFrame{
 		
 		BufferedImage myPicture = null;
 		try {
-			myPicture = ImageIO.read(new File("resources/koie_login.jpg"));
+			myPicture = ImageIO.read(this.getClass().getClassLoader().getResourceAsStream("koie_login.jpg"));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

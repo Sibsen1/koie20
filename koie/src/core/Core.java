@@ -10,19 +10,19 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.sql.ResultSet;
-import com.sun.mail.smtp.SMTPTransport;
 
 import java.security.Security;
 import java.util.Date;
 import java.util.Properties;
 
+/*import com.sun.mail.smtp.SMTPTransport;
 import javax.mail.Address;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMessage;*/
 
 
 public class Core {
@@ -170,6 +170,7 @@ public class Core {
 	
 	public int getWoodStatus(String koie) {
 		try {
+			System.out.println("Koienavn:"+koie);
 			return (int) resToList(DBClass.getQueryCondition("koie", "koienavn", koie, "vedstatus")).get(0).get(0);			
 		} catch (SQLException e) {
 			DBFailure(e);
@@ -259,7 +260,7 @@ public class Core {
 	}
 	
 	
-	public void SendEmails(String koieName, int year, int month, int date, String title, String message) throws AddressException, MessagingException {
+	/*public void SendEmails(String koieName, int year, int month, int date, String title, String message) throws AddressException, MessagingException {
         String username = EMAIL_USER;
         String password = EMAIL_PASSWORD;
         
@@ -297,14 +298,14 @@ public class Core {
         props.setProperty("mail.smtp.socketFactory.port", "465");
         props.setProperty("mail.smtps.auth", "true");
 
-        /*
+        *//*
         If set to false, the QUIT command is sent and the connection is immediately closed. If set 
         to true (the default), causes the transport to wait for the response to the QUIT command.
 
         ref :   http://java.sun.com/products/javamail/javadocs/com/sun/mail/smtp/package-summary.html
                 http://forum.java.sun.com/thread.jspa?threadID=5205249
                 smtpsend.java - demo program from javamail
-        */
+        *//*
         props.put("mail.smtps.quitwait", "false");
 
         Session session = Session.getInstance(props, null);
@@ -326,7 +327,7 @@ public class Core {
         t.sendMessage(msg, msg.getAllRecipients());      
         t.close();
     }
-	
+	*/
 	
 	public void DBFailure(Exception e) {
 		// TODO Her påkaller den DBConnector disconnect og GUI shutdown

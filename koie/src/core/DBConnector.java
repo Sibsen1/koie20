@@ -8,7 +8,9 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -160,7 +162,7 @@ public class DBConnector {
 		if (rowIDColumn == null) {
 			rowIDColumn = tablePrimaryKey.get(table);
 		}
-		
+		//System.out.println("rowID:" +rowID.toString());
 		String rowIDString = "";
 		
 		switch (tableColumnTypes.get(table).get(rowIDColumn)) {
@@ -175,7 +177,7 @@ public class DBConnector {
 						+ "')";
 				break;
 			case "VARCHAR":
-				rowID = "'" + rowID + "'";
+				rowIDString = "'" + rowID + "'";
 				break;
 			default:
 				rowIDString = "" + rowID;		
@@ -193,7 +195,7 @@ public class DBConnector {
 			sBuild.append(", ");
 		}
 		sBuild.append(columns[columnI]);
-		
+		System.out.println("RowIDSTRING: "+rowIDString);
 		//System.out.println((String.format("SELECT %s FROM %s WHERE %s=%s", sBuild, table, rowIDColumn, rowIDString)));
 		return executeSQL(String.format("SELECT %s FROM %s WHERE %s=%s", sBuild, table, rowIDColumn, rowIDString));
 	}
@@ -305,28 +307,27 @@ public class DBConnector {
 	}
 
 	
-	public void editRow(String table, Object primaryKey, Object... writableFields) throws SQLException {
+	public void editRow(String table, Object primaryKey, Object... wFields) throws SQLException {
 		List<String> columnNames = tableColumnNames.get(table);
-			
-		if (writableFields.length != columnNames.size()) {
-			System.out.println(writableFields.length+"-"+columnNames.size());
-			throw new SQLException("Must have exactly "+ writableFields.length + " field-arguments "
+		ArrayList<Object> writableFields = new ArrayList<Object>(Arrays.asList(wFields));
+		if (writableFields.size() != columnNames.size()) {
+			System.out.println(writableFields.size()+"-"+columnNames.size());
+			throw new SQLException("Must have exactly "+ writableFields.size() + " field-arguments "
 					+ "(can have fields which are null).");
 		}
 		
 		Map<String, String> columnTypes = tableColumnTypes.get(table);
-		
 		StringBuilder sBuild = new StringBuilder();
-		
+		System.out.println(writableFields);
 		int columnI = 0;
-		while (columnI < writableFields.length) {
-			Object argument = writableFields[columnI];
+		while (columnI < writableFields.size()) {
+			Object argument = writableFields.get(columnI);
 					
 			if (argument == null) {
 				columnI++;
+				
 				continue;
 			}
-				
 			sBuild.append(columnNames.get(columnI));
 			sBuild.append(" = ");
 				
@@ -344,25 +345,27 @@ public class DBConnector {
 				break;
 				
 			case "TINYINT":
-				sBuild.append(writableFields[columnI]);
+				sBuild.append(writableFields.get(columnI));
 				break;
 			case "INT":
-				sBuild.append(writableFields[columnI]);
+				sBuild.append(writableFields.get(columnI));
 				break;
 				
 			default:
 				sBuild.append("'");
-				sBuild.append(writableFields[columnI]);
+				sBuild.append(writableFields.get(columnI));
 				sBuild.append("'");
 				break;
 			}
 			
 			columnI++;
-			if (columnI < writableFields.length)
+			if (columnI < writableFields.size())
 				sBuild.append(", ");
 		
 		}
-		
+		if (sBuild.substring(sBuild.length()-2, sBuild.length()).equals(", ")){
+			sBuild.deleteCharAt(sBuild.length()-2);
+		}
 		switch (tablePrimaryKeyType.get(table)) {
 		case "INT": break;
 		case "TINYINT": break;
@@ -370,10 +373,8 @@ public class DBConnector {
 			primaryKey = "'"+primaryKey+"'";
 		}
 		
-		//System.out.printf("UPDATE %s SET %s WHERE %s = %s", 		
-			//	table, sBuild, tablePrimaryKey.get(table), primaryKey);
-		executeSQL(String.format("UPDATE %s SET %s WHERE %s = %s", 		
-								table, sBuild, tablePrimaryKey.get(table), primaryKey));
+		System.out.printf("UPDATE %s SET %s WHERE %s = %s", table, sBuild, tablePrimaryKey.get(table), primaryKey);
+		executeSQL(String.format("UPDATE %s SET %s WHERE %s = %s", table, sBuild, tablePrimaryKey.get(table), primaryKey));
 	}
 	
 

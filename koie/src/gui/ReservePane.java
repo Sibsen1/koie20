@@ -10,6 +10,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -46,7 +47,7 @@ public class ReservePane extends JPanel{
 		
 		BufferedImage myPicture = null;
 		try {
-			myPicture = ImageIO.read(new File("resources/koie_login.jpg")); //Bildet skal oppdateres når man velger mellom
+			myPicture = ImageIO.read(this.getClass().getClassLoader().getResourceAsStream("koie_login.jpg")); //Bildet skal oppdateres når man velger mellom
 		} catch (IOException e) {											//forskjellige koier
 			// TODO Auto-generated catch block
 			e.printStackTrace();
