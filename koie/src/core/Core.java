@@ -255,33 +255,30 @@ public class Core {
 	}
 	
 	
-	/*public void SendEmails(String koieName, int year, int month, int date, String title, String message) throws AddressException, MessagingException {
-        String username = EMAIL_USER;
-        String password = EMAIL_PASSWORD;
-        
-        List<List<Object>> recipients;
+	public boolean SendEmailToReservations(String koieName, int resYear, int resMonth, int resDay, String title, String message) {
+		
+		int idkoie = getKoieID(koieName);
+		
+		List<List<Object>> reservationEmails;
 		try {
-			recipients = resToList(DBClass.getQueryCondition(RESERVATIONS, "date", new GregorianCalendar(year, month-1, date), "user_email"));
+			reservationEmails = resToList(DBClass.getQueryCondition(RESERVATIONS, "date", new GregorianCalendar(resYear, resMonth-1, resDay), "koie_idkoie", "user_mail"));
 		} catch (SQLException e) {
 			DBFailure(e);
-			return;
+			return false;
 		}
-        
-        List<String> recipientsAdded = new ArrayList<String>();
-        List<Address> recipientAddresses = new ArrayList<Address>();
-        
-        for (Object recipient : recipients.get(0)) {
-        	String recipStr = (String) recipient;
-        	
-        	if (!recipientsAdded.contains(recipStr)) {
-        		
-        		recipientsAdded.add(recipStr);
-        		recipientAddresses.add(InternetAddress.parse(recipStr, false)[0]);
-        	}
-        }
 		
-        
-		Security.addProvider(new com.sun.net.ssl.internal.ssl.Provider());
+		if (reservationEmails.isEmpty())
+			return false;
+		
+		List<String> recipientEmails = new ArrayList<String>();
+		for (List<Object> recpList: reservationEmails ) {
+
+			if ((int) recpList.get(0) == idkoie) {
+				recipientEmails.add((String) recpList.get(1));
+			}
+		}
+		
+        Security.addProvider(new com.sun.net.ssl.internal.ssl.Provider());
         final String SSL_FACTORY = "javax.net.ssl.SSLSocketFactory";
 
         // Get a Properties object
@@ -293,14 +290,7 @@ public class Core {
         props.setProperty("mail.smtp.socketFactory.port", "465");
         props.setProperty("mail.smtps.auth", "true");
 
-        *//*
-        If set to false, the QUIT command is sent and the connection is immediately closed. If set 
-        to true (the default), causes the transport to wait for the response to the QUIT command.
 
-        ref :   http://java.sun.com/products/javamail/javadocs/com/sun/mail/smtp/package-summary.html
-                http://forum.java.sun.com/thread.jspa?threadID=5205249
-                smtpsend.java - demo program from javamail
-        *//*
         props.put("mail.smtps.quitwait", "false");
 
         Session session = Session.getInstance(props, null);
@@ -308,22 +298,34 @@ public class Core {
         // -- Create a new message --
         final MimeMessage msg = new MimeMessage(session);
 
-        // -- Set the FROM and TO fields --
-        msg.setFrom(new InternetAddress(username + "@gmail.com"));
-        msg.setRecipients(Message.RecipientType.TO, (Address[]) recipientAddresses.toArray());
-
-        msg.setSubject(title);
-        msg.setText(message, "utf-8");
-        msg.setSentDate(new Date());
-
-        SMTPTransport t = (SMTPTransport)session.getTransport("smtps");
-
-        t.connect("smtp.gmail.com", username, password);
-        t.sendMessage(msg, msg.getAllRecipients());      
-        t.close();
-    }
-	*/
+        
+        try {
+			msg.setFrom(new InternetAddress(EMAIL_USER + "@gmail.com"));
+        
+	        for (String recipientEmail : recipientEmails) {
+	        	msg.addRecipients(Message.RecipientType.TO, InternetAddress.parse(recipientEmail, false));
+	        }
 	
+	        msg.setSubject(title);
+	        msg.setText(message, "utf-8");
+	        msg.setSentDate(new Date());
+	
+	        SMTPTransport t = (SMTPTransport)session.getTransport("smtps");
+	
+	        t.connect("smtp.gmail.com", EMAIL_USER, EMAIL_PASSWORD);
+	        t.sendMessage(msg, msg.getAllRecipients());      
+	        t.close();
+	        return true;
+	        
+        } catch (MessagingException e) {
+        	// TODO Auto-generated catch block
+        	e.printStackTrace();
+        	return false;
+        }
+        
+    }
+
+
 	public void DBFailure(Exception e) {
 		// TODO Her påkaller den DBConnector disconnect og GUI shutdown
 		System.out.println("DBFailure():");
@@ -357,12 +359,12 @@ public class Core {
 	}
 	
 
-	/*public static void main(String[] args) {
+	public static void main(String[] args) {
 		try {
 			Core core = new Core();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}*/
+	}
 }
