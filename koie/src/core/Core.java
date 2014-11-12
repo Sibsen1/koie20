@@ -10,19 +10,18 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.sql.ResultSet;
-
 import java.security.Security;
 import java.util.Date;
 import java.util.Properties;
 
-/*import com.sun.mail.smtp.SMTPTransport;
+import com.sun.mail.smtp.SMTPTransport;
 import javax.mail.Address;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;*/
+import javax.mail.internet.MimeMessage;
 
 
 public class Core {
@@ -106,17 +105,15 @@ public class Core {
 				if (cal.get(Calendar.YEAR) == date.get(Calendar.YEAR) && (cal.get(Calendar.MONTH))+1 == date.get(Calendar.MONTH)+1 
 						&& cal.get(Calendar.DAY_OF_MONTH) == date.get(Calendar.DAY_OF_MONTH)) {
 					
-					reservations++;
+					reservations += (int) reservationsList.get(i).get(2);
 					
 				}
 			}
 		}
-		if (reservations + antallPersoner <= (int) getDataBaseRow(KOIER, koie, "sengeplasser").get(0)) {
+		if (reservations + antallPersoner <= (int) getDataBaseRow(KOIER, getKoieID(koie), "sengeplasser").get(0)) {
 			
 			try {
-				for (int i = 0; i < antallPersoner; i++) {
-					DBClass.insertRow(RESERVATIONS, null, getKoieID(koie), email, date);				
-				}
+				DBClass.insertRow(RESERVATIONS, null, getKoieID(koie), email, date, antallPersoner);
 				return true;
 			} catch (SQLException e) {
 				DBFailure(e);
@@ -237,7 +234,7 @@ public class Core {
 	}
 	
 
-	public ArrayList<Object> getDataBaseRow(String table, String primaryKey, String... columns) {
+	public ArrayList<Object> getDataBaseRow(String table, Object primaryKey, String... columns) {
 		try {
 			return (ArrayList<Object>) resToList(DBClass.getQueryCondition(table, null, primaryKey,columns)).get(0);
 			
@@ -360,14 +357,12 @@ public class Core {
 	}
 	
 
-	public static void main(String[] args) {
+	/*public static void main(String[] args) {
 		try {
 			Core core = new Core();
-			System.out.println(core.DBClass.printResultSet(core.DBClass.getQueryCondition(RESERVATIONS, "idkoie", 7));
-			
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}
+	}*/
 }
