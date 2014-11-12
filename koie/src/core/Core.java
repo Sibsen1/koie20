@@ -43,7 +43,7 @@ public class Core {
 	final static String USERS = "user";
 	
 	private GUI GUIClass;
-	private DBConnector DBClass;
+	public DBConnector DBClass;
 	
 	public Core() throws SQLException {
 		DBClass = new DBConnector(this, DBhostAddress, DBUserName, DBPassword);
@@ -95,7 +95,6 @@ public class Core {
 		date.setTime(dato);
 		
 		int reservations = 0;
-		boolean booket = false;
 		ArrayList<List<Object>> reservationsList = getDataBaseColumns(RESERVATIONS, "koie_idkoie", "date","antall_personer");
 		
 		for (int i = 0; i < reservationsList.size(); i++) {
@@ -112,13 +111,12 @@ public class Core {
 				}
 			}
 		}
-		if (reservations >= (int) getDataBaseRow(KOIER, koie, "sengeplasser").get(0)) {
-			booket = true;
-		}
-		if (booket == false) {
+		if (reservations + antallPersoner <= (int) getDataBaseRow(KOIER, koie, "sengeplasser").get(0)) {
 			
 			try {
-				DBClass.insertRow(RESERVATIONS, null, getKoieID(koie), email, date);
+				for (int i = 0; i < antallPersoner; i++) {
+					DBClass.insertRow(RESERVATIONS, null, getKoieID(koie), email, date);				
+				}
 				return true;
 			} catch (SQLException e) {
 				DBFailure(e);
@@ -362,15 +360,14 @@ public class Core {
 	}
 	
 
-	/*public static void main(String[] args) {
+	public static void main(String[] args) {
 		try {
 			Core core = new Core();
-			System.out.println(core.getDataBaseColumns("user"));
-			core.setWoodStatus("Flåkoia", 0);
-			System.out.println(core.getWoodStatus("Flåkoia"));
+			System.out.println(core.DBClass.printResultSet(core.DBClass.getQueryCondition(RESERVATIONS, "idkoie", 7));
+			
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}*/
+	}
 }
