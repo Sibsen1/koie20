@@ -56,6 +56,7 @@ public class ReservePane extends JPanel{
 		picLabel.setBounds(269, 11, 200, 158);
 		add(picLabel);
 		
+		this.warnings = new HashMap<String,Integer>();
 		
 		UtilDateModel model = new UtilDateModel();
 		JDatePanelImpl datePanel = new JDatePanelImpl(model);

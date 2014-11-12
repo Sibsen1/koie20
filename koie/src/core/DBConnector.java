@@ -112,7 +112,7 @@ public class DBConnector {
 			} catch (NullPointerException e) {
 				
 			}
-		}	
+		}
 	}
 
 	private void connect() throws SQLException {
@@ -195,7 +195,6 @@ public class DBConnector {
 			sBuild.append(", ");
 		}
 		sBuild.append(columns[columnI]);
-		System.out.println("RowIDSTRING: "+rowIDString);
 		//System.out.println((String.format("SELECT %s FROM %s WHERE %s=%s", sBuild, table, rowIDColumn, rowIDString)));
 		return executeSQL(String.format("SELECT %s FROM %s WHERE %s=%s", sBuild, table, rowIDColumn, rowIDString));
 	}
