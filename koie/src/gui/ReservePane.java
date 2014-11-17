@@ -76,11 +76,30 @@ public class ReservePane extends JPanel{
 				if (datePicker.getModel().getValue() != null && Integer.parseInt(txtDager.getText())!= 0){
 					if (g.CoreClass.insertReservation(comboBox.getSelectedItem().toString(),g.CoreClass.userEmail,(Date) datePicker.getModel().getValue(),Integer.parseInt(txtDager.getText()))){
 						labOutput.setText("Reservasjon regestrert.");
+						
 						if (warnings.get(comboBox.getSelectedItem().toString()) != null){
 							JOptionPane.showMessageDialog(null, comboBox.getSelectedItem().toString() + " har bare " + warnings.get(comboBox.getSelectedItem().toString()) + " sekker ved igjen! Husk å ta med mer!" );
-							if (!fraktes.get(comboBox.getSelectedItem().toString()).trim().equals(",") && fraktes.get(comboBox.getSelectedItem().toString()).length() != 0)
-								JOptionPane.showMessageDialog(null, "<html><body><p style='width: 200px;'>Det trengs å fraktes nytt utstyr til "+comboBox.getSelectedItem().toString()+" koien: "+fraktes.get(comboBox.getSelectedItem().toString())+"</body></html>");
-							//g.core send mail blabla
+						}
+						
+						if (!fraktes.get(comboBox.getSelectedItem().toString()).trim().equals(",") && fraktes.get(comboBox.getSelectedItem().toString()).length() != 0) {
+							JOptionPane.showMessageDialog(null, "<html><body><p style='width: 200px;'>Det trengs å fraktes nytt utstyr til "+comboBox.getSelectedItem().toString()+" koien: "+fraktes.get(comboBox.getSelectedItem().toString())+"</body></html>");
+							
+							String koieNavn = comboBox.getSelectedItem().toString();
+							
+							Calendar cal = Calendar.getInstance();
+							cal.setTime((Date) datePicker.getModel().getValue());
+							int resYear = cal.get(Calendar.YEAR);
+							int resMonth = cal.get(Calendar.MONTH)+1;
+							int resDay = cal.get(Calendar.DAY_OF_MONTH);
+							
+							g.CoreClass.SendEmailToReservations(koieNavn, 
+									resYear, resMonth, resDay, 
+									"Utstyr må fraktes til " + koieNavn + " [Automatisk e-mail]", 
+									"Hei,\n\n"
+											+ "Dette er en e-mail som er sent for å minne deg på at du har en reservasjon på NTNUI sin koie "
+											+ "'" + koieNavn+ "'. Denne koien har nå utstyr som må fraktes opp, og vi ber deg vennligst om å "
+											+ "ta dette med deg når du reiser opp "+ resDay+"."+resMonth+"."+resYear+".\n\n"
+											+ "Hilsen,\n koie-avdelingen på NTNUI");
 						}
 					}
 					else labOutput.setText("Koien er ikke ledig den dagen/de dagene.");
