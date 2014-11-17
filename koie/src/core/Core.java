@@ -165,7 +165,7 @@ public class Core {
 	
 	public int getWoodStatus(String koie) {
 		try {
-			System.out.println("Koienavn:"+koie);
+			//System.out.println("Koienavn:"+koie);
 			return (int) resToList(DBClass.getQueryCondition("koie", "koienavn", koie, "vedstatus")).get(0).get(0);			
 		} catch (SQLException e) {
 			DBFailure(e);

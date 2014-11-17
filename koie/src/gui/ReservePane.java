@@ -19,6 +19,7 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 public class ReservePane extends JPanel{
 	private JTextField txtDager;
@@ -35,6 +36,7 @@ public class ReservePane extends JPanel{
 	private ArrayList<List<Object>> ki;
 	private ArrayList<String> sengeplassr;
 	private HashMap<String, String> fraktes;
+	private JScrollPane jspR;
 	public ReservePane(GUI gui) {
 		g = gui;
 		setLayout(null);
@@ -71,16 +73,19 @@ public class ReservePane extends JPanel{
 		JButton btnBekreft = new JButton("BEKREFT");
 		btnBekreft.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				if (g.CoreClass.insertReservation(comboBox.getSelectedItem().toString(),g.CoreClass.userEmail,(Date) datePicker.getModel().getValue(),Integer.parseInt(txtDager.getText()))){
-					labOutput.setText("Reservasjon regestrert.");
-					if (warnings.get(comboBox.getSelectedItem().toString()) != null){
-						JOptionPane.showMessageDialog(null, comboBox.getSelectedItem().toString() + " har bare " + warnings.get(comboBox.getSelectedItem().toString()) + " sekker ved igjen! Husk å ta med mer!" );
-						if (fraktes.get(comboBox.getSelectedItem().toString()).length() != 0)
-							JOptionPane.showMessageDialog(null, "Det trengs å fraktes nytt utstyr til "+comboBox.getSelectedItem().toString()+" koien: "+fraktes.get(comboBox.getSelectedItem().toString()));
+				if (datePicker.getModel().getValue() != null && Integer.parseInt(txtDager.getText())!= 0){
+					if (g.CoreClass.insertReservation(comboBox.getSelectedItem().toString(),g.CoreClass.userEmail,(Date) datePicker.getModel().getValue(),Integer.parseInt(txtDager.getText()))){
+						labOutput.setText("Reservasjon regestrert.");
+						if (warnings.get(comboBox.getSelectedItem().toString()) != null){
+							JOptionPane.showMessageDialog(null, comboBox.getSelectedItem().toString() + " har bare " + warnings.get(comboBox.getSelectedItem().toString()) + " sekker ved igjen! Husk å ta med mer!" );
+							if (!fraktes.get(comboBox.getSelectedItem().toString()).trim().equals(",") && fraktes.get(comboBox.getSelectedItem().toString()).length() != 0)
+								JOptionPane.showMessageDialog(null, "<html><body><p style='width: 200px;'>Det trengs å fraktes nytt utstyr til "+comboBox.getSelectedItem().toString()+" koien: "+fraktes.get(comboBox.getSelectedItem().toString())+"</body></html>");
 							//g.core send mail blabla
+						}
 					}
+					else labOutput.setText("Koien er ikke ledig den dagen/de dagene.");
 				}
-				else labOutput.setText("Koien er ikke ledig den dagen/de dagene.");
+				else labOutput.setText("Velg dato.");
 			}
 		});
 		btnBekreft.setBounds(123, 322, 86, 23);
@@ -125,14 +130,25 @@ public class ReservePane extends JPanel{
             public void actionPerformed(ActionEvent e) {
             	labKname.setText(names.get(comboBox.getSelectedIndex())+" - maks "+sengeplassr.get(comboBox.getSelectedIndex())+" sengeplasser.");
             	labReservers.setText("<html>"+comboBox.getSelectedItem().toString()+"<br>");
+            	Map<String,Integer> rsrvs = new HashMap<String,Integer>();
             	for (int i = 0; i < reservationsList.size(); i++) {
         			
         			if ((int) reservationsList.get(i).get(0) == g.CoreClass.getKoieID(comboBox.getSelectedItem().toString())) {
         				Calendar cal = new GregorianCalendar();
         				cal.setTime((Date) reservationsList.get(i).get(1));
-        				labReservers.setText(labReservers.getText() + " er reservert den "+ cal.getTime().toString()+" med "+reservationsList.get(i).get(1)+" personer.<br>");
+        				if (rsrvs.get(cal.getTime().toString())==null){
+        					rsrvs.put(cal.getTime().toString(),Integer.parseInt(reservationsList.get(i).get(2).toString()));
+        				}
+        				else rsrvs.put(cal.getTime().toString(),rsrvs.get(cal.getTime().toString())+Integer.parseInt(reservationsList.get(i).get(2).toString()));
         			}
         		}
+            	
+            	for(Entry<String, Integer> entry : rsrvs.entrySet()) {
+            	    String key = entry.getKey();
+            	    Integer value = entry.getValue();
+            	    labReservers.setText(labReservers.getText()+" er reservert den "+ key.substring(0,key.length()-17)+" med "+value+" personer.<br>");
+
+            	}
             	labReservers.setText(labReservers.getText()+"</html>");
            }
         };
@@ -149,17 +165,18 @@ public class ReservePane extends JPanel{
 		add(labReserve);
 		
 		labKname = new JTextPane();
-		labKname.setBounds(242, 162, 236, 20);
+		labKname.setBounds(255, 180, 236, 20);
 		labKname.setBackground(this.getBackground());
 		add(labKname);
 		
 		labOutput = new JLabel();
-		labOutput.setBounds(203, 326, 161, 19);
+		labOutput.setBounds(123, 356, 206, 19);
 		add(labOutput);
 		
 		labReservers = new JLabel();
-		labReservers.setBounds(283, 200, 218, 142);
-		add(labReservers);
+		jspR = new JScrollPane(labReservers);
+		jspR.setBounds(283, 200, 283, 142);
+		add(jspR);
 	}
 	public void setWarnings(Map<String, Integer> koiewood) {
 		warnings = koiewood;
@@ -173,7 +190,8 @@ public class ReservePane extends JPanel{
 			if ((int) reservationsList.get(i).get(0) == g.CoreClass.getKoieID(comboBox.getSelectedItem().toString())) {
 				Calendar cal = new GregorianCalendar();
 				cal.setTime((Date) reservationsList.get(i).get(1));
-				labReservers.setText(labReservers.getText() + " er reservert den "+ cal.getTime().toString()+"<br>");
+				String t =  cal.getTime().toString().substring(cal.getTime().toString().length()-17);
+				labReservers.setText(labReservers.getText() + " er reservert den "+ t+"<br>");
 			}
 		}
     	labReservers.setText(labReservers.getText()+"</html>");

@@ -317,7 +317,7 @@ public class DBConnector {
 		
 		Map<String, String> columnTypes = tableColumnTypes.get(table);
 		StringBuilder sBuild = new StringBuilder();
-		System.out.println(writableFields);
+		//System.out.println(writableFields);
 		int columnI = 0;
 		while (columnI < writableFields.size()) {
 			Object argument = writableFields.get(columnI);

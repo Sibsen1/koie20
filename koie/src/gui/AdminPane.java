@@ -21,6 +21,8 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.ScrollPane;
 
 import javax.swing.border.LineBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import java.awt.Color;
 import java.io.File;
@@ -173,14 +175,21 @@ public class AdminPane extends JPanel {
 				} 
 				tblRapport = new JTable(table_model);
 				tblRapport.getTableHeader().setReorderingAllowed(false);
+				tblRapport.getSelectionModel().addListSelectionListener(new ListSelectionListener(){
+			        public void valueChanged(ListSelectionEvent event) {
+			            // do some actions here, for example
+			            // print first column value from selected row
+			        	JOptionPane.showMessageDialog(null, "<html><p style='width: 200px;'>"+tblRapport.getValueAt(tblRapport.getSelectedRow(), 2).toString()+"</html>");
+			        }
+			    });
 				
 				JScrollPane jspB = new JScrollPane(tblRapport);
 				jspB.setBounds(218, 200, 352, 175);
 				start.add(jspB);
 				
 				JLabel labRapport = new JLabel();
-				labRapport.setText("Liste over rapporter:");
-				labRapport.setBounds(218, 169, 192, 20);
+				labRapport.setText("<html>Liste over rapporter:<br>Velg en rapport for tekst</html>");
+				labRapport.setBounds(218, 161, 192, 28);
 				labRapport.setBackground(this.getBackground());
 				start.add(labRapport);
 				
@@ -243,17 +252,17 @@ public class AdminPane extends JPanel {
 				if (edit.equals("true")){
 					List<String> utstyr = new ArrayList<String>();
 					
-					if (tableItems.get(7).toString() != koieInfo.get(9)){
-						if (tableItems.get(7).toString() == "x"){
+					if (!tableItems.get(7).toString().equals(koieInfo.get(9))){
+						if (tableItems.get(7).toString().equals("x")){
 							utstyr.add("gitar");	
 						}
 					}
-					if (tableItems.get(8).toString() != koieInfo.get(10)){
-						if (tableItems.get(8).toString() == "x"){
+					if (!tableItems.get(8).toString().equals(koieInfo.get(10))){
+						if (tableItems.get(8).toString().equals("x")){
 							utstyr.add("vaffeljern");	
 						}
 					} 
-					if (tableItems.get(9).toString() != koieInfo.get(11)){
+					if (!tableItems.get(9).toString().equals(koieInfo.get(11))){
 						String[] s1 = tableItems.get(9).toString().split(",");
 						for (int i = 0; i < s1.length; i++)
 						    s1[i] = s1[i].trim();
@@ -314,6 +323,11 @@ public class AdminPane extends JPanel {
 	}
 	
 	public void editMode(){
+		if (editModel.getRowCount() > 0) {
+		    for (int i = editModel.getRowCount() - 1; i > -1; i--) {
+		    	editModel.removeRow(i);
+		    }
+		}
 		koieInfo = g.CoreClass.getDataBaseRow("koie", Integer.toString(g.CoreClass.getKoieID(lstKoier.getSelectedValue().toString())));
 		for (int i = 0;i < newColumns.length;i++){
 			editModel.addRow(new Object[]{newColumns[i],koieInfo.get(i),lFormats.get(i)});
